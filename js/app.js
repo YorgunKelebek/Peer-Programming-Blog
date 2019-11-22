@@ -1,11 +1,9 @@
 //$(document).foundation()
 
-/* TO-DO: Load More Blog items */
-
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
 const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
-const pageSize = 5;
+const pageSize = 1;
 const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
 
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
@@ -32,14 +30,52 @@ async function initiateBlogSummaryList()
 			blogSummary = buildBlogSummary(json.items[i], json.modular_content);
 			document.querySelector("main").appendChild(blogSummary);
 		}
-	}
+    }
+    setNextBatchLoad(json.pagination.next_page);
+}
+
+
+async function loadNextBlogBatch() {
+    var btnLoadMore = document.getElementById("btnLoadMore");
+    const api = btnLoadMore.dataset.next_page;
+    const json = await fetchKontent(api);
+
+    if (json.pagination.count > 0)
+    {
+        btnLoadMore.dataset.first_item = json.items[0].system.id;
+        var blogSummary = "";
+        for (var i = 0; i < json.pagination.count; i++) {
+            if (json.items[i].system.type === "blog_post") {
+                blogSummary = buildBlogSummary(json.items[i], json.modular_content);
+                document.querySelector("main").appendChild(blogSummary);
+            }
+        }
+        setNextBatchLoad(json.pagination.next_page);
+        scrollToNewBatch(btnLoadMore.dataset.first_item);
+    }
+}
+
+
+function setNextBatchLoad(nextBatchUrl) {
+    var btnLoadMore = document.getElementById("btnLoadMore");
+    if (nextBatchUrl !== "") {
+        btnLoadMore.dataset.next_page = nextBatchUrl;
+        btnLoadMore.style.display = "inherit";
+    } else { btnLoadMore.style.display = "none"; }
+}
+
+function scrollToNewBatch(itemId) {
+    var item = document.querySelector('h1[data-item_id="' + itemId + '"]');
+    item.scrollIntoView();
 }
 
 
 function buildBlogSummary(blog, modularContent)
 {
-	const blogSummary = document.importNode(blogSummaryTemplate.content, true);
-	blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
+    const blogSummary = document.importNode(blogSummaryTemplate.content, true);
+    var blogSummaryTitle = blogSummary.querySelector(".summary-title");
+    blogSummaryTitle.textContent = blog.elements.title.value;
+    blogSummaryTitle.dataset.item_id = blog.system.id;
 	if (blog.elements.title.value.blog_media___image !== "")
 	{
 		blogSummary.querySelector(".blog-image").src = blog.elements.blog_media___image.value[0].url;
