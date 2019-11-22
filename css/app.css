@@ -1,0 +1,14 @@
+﻿
+p .button {
+	margin-left: 15px;
+}
+
+.blog-image-container {
+    margin: auto;
+    width: 80%;
+    padding: 10px;
+}
+
+.summary-author {
+    float: right;
+}

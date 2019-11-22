@@ -1,0 +1,72 @@
+﻿<!doctype html>
+<html class="no-js" dir="ltr" lang="en">
+
+<head>
+<meta charset="utf-8" />
+<meta content="ie=edge" http-equiv="x-ua-compatible" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Blog - Peer Programming</title>
+<link href="css/foundation.css" rel="stylesheet" />
+<link href="css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+
+	<div class="grid-container">
+		<section>
+		<div class="grid-x grid-padding-x">
+			<div class="large-12 medium-12 cell">
+				<h1>Peer Programming</h1>
+				<hr />
+			</div>
+		</div>
+		</section>
+		
+		<section>
+		<div class="grid-x grid-padding-x">
+			<div class="large-12 medium-12 cell">
+				<main>
+				</main>
+			</div>
+			<div class="grid-x grid-padding-x">
+				<div class="large-12 medium-12 cell">
+					<p><a id="btnLoadMore" class="button" href="#">Load More</a></p>
+				</div>
+			</div>
+		</div>
+		</section>
+		
+		<!-- TEMPLATES -->
+	
+	    <template id="blog_summary_template">
+			<article class="summary-blog-post">
+				<header>
+					<h1 class="summary-title"></h1>
+				</header>
+                <figure>
+                    <div class="blog-image-container">
+                        <img class="blog-image " />
+                    </div>
+                </figure>
+				<span class="summary-author"></span>
+				<span class="summary-date"> </span>
+				<div class="summary-body"></div>
+				<hr />
+			</article>
+	    </template>
+	    
+	    <!-- /TEMPLATES -->
+	</div>
+    
+	<!--<script src="js/vendor/jquery.js" type="text/javascript"></script>
+	<script src="js/vendor/what-input.js" type="text/javascript"></script>
+	<script src="js/vendor/foundation.js" type="text/javascript"></script>-->
+	<script src="js/app.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		initiateBlogSummaryList();
+	</script>
+
+</body>
+
+</html>
