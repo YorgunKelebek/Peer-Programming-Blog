@@ -61,7 +61,7 @@ function setNextBatchLoad(nextBatchUrl) {
     var btnLoadMore = document.getElementById("btnLoadMore");
     if (nextBatchUrl !== "") {
         btnLoadMore.dataset.next_page = nextBatchUrl;
-        btnLoadMore.style.display = "inherit";
+        btnLoadMore.style.removeProperty("display");
     } else { btnLoadMore.style.display = "none"; }
 }
 
