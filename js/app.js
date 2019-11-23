@@ -3,7 +3,7 @@
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
 const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
-const pageSize = 1;
+const pageSize = 2;
 const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
 
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
@@ -11,9 +11,10 @@ const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 
 async function fetchKontent(api)
 {
-	return await fetch(api).then(res => res.json());
+    const res = await fetch(api);
+    const json = await res.json();
+    return json;
 }
-
 
 async function initiateBlogSummaryList()
 {
@@ -65,7 +66,7 @@ function setNextBatchLoad(nextBatchUrl) {
 }
 
 function scrollToNewBatch(itemId) {
-    var item = document.querySelector('h1[data-item_id="' + itemId + '"]');
+    var item = document.querySelector('div[data-item_id="' + itemId + '"]');
     item.scrollIntoView();
 }
 
@@ -73,10 +74,9 @@ function scrollToNewBatch(itemId) {
 function buildBlogSummary(blog, modularContent)
 {
     const blogSummary = document.importNode(blogSummaryTemplate.content, true);
-    var blogSummaryTitle = blogSummary.querySelector(".summary-title");
-    blogSummaryTitle.textContent = blog.elements.title.value;
-    blogSummaryTitle.dataset.item_id = blog.system.id;
-	if (blog.elements.title.value.blog_media___image !== "")
+    blogSummaryTitle = blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
+    blogSummary.querySelector(".summary-blog-post").dataset.item_id = blog.system.id;
+	if (blog.elements.blog_media___image.value.length > 0)
 	{
 		blogSummary.querySelector(".blog-image").src = blog.elements.blog_media___image.value[0].url;
 	}
@@ -95,7 +95,7 @@ function getAuthor(keyName, data)
     for (var key in data) {
         if (data.hasOwnProperty(key))
         {
-            if (key === keyName) { author = "Posted by " + data[key].elements.full_name.value; }
+            if (key === keyName) { author = "by " + data[key].elements.full_name.value; }
         }
     }
     return author;
