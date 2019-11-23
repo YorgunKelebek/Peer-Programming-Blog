@@ -3,7 +3,7 @@
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
 const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
-const pageSize = 2;
+const pageSize = 10;
 const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
 
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
