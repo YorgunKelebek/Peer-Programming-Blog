@@ -48,8 +48,20 @@
                     <div class="summary-blog-section">
                         <p class="meta-data"><span class="summary-date"></span> &bull; <a class="summary-author"></a></p>
                         <h1 class="summary-title"></h1>
-                        <p class="summary-body"></p>
+                        <p class="summary-body blog-preview"></p>
+                        <p><a class="button secondary blog-preview-toggle" onclick="toggleBlogPreview(this)">Read more</a></p>
                     </div>
+                </div>
+
+            </article>
+        </template>
+
+        <template id="api_error_message">
+            <article>
+
+                <div class="callout alert">
+                    <h5>Error</h5>
+                    <p><strong>We are very sorry.</strong> There has been an error while fetching the content. Please try again. If the problem persists, please visit this page later.</p>
                 </div>
 
             </article>
@@ -62,10 +74,6 @@
     <script src="js/vendor/what-input.js" type="text/javascript"></script>
     <script src="js/vendor/foundation.js" type="text/javascript"></script>-->
     <script src="js/app.js" type="text/javascript"></script>
-
-    <script type="text/javascript">
-        initiateBlogSummaryList();
-    </script>
 
 </body>
 
