@@ -1,3 +1,4 @@
+import { firstOrDefaultValue, firstOrDefaultContent } from "/js/parsing.js";
 //$(document).foundation()
 
 /* TO-DO: Load More Blog items */
@@ -23,7 +24,7 @@ async function initiateBlogSummaryList()
 	const api = apiItems.format([projectId, params]);
 	const json = await fetchKontent(api);
 	console.log(json);
-	
+
 	var blogSummary = "";
 	for (var i = 0; i < json.pagination.count; i++)
 	{
@@ -35,23 +36,40 @@ async function initiateBlogSummaryList()
 	}
 }
 
-
 function buildBlogSummary(blog, modularContent)
 {
 	const blogSummary = document.importNode(blogSummaryTemplate.content, true);
-	blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
-	if (blog.elements.title.value.blog_media___image !== "")
+
+	const title = firstOrDefaultValue(blog, "title") || "unknown";
+	blogSummary.querySelector(".summary-title").textContent = title;
+
+	const blogMediaImageURL = firstOrDefaultValue(blog, "blog_media___image", "url");
+	if (blogMediaImageURL)
 	{
-		blogSummary.querySelector(".blog-image").src = blog.elements.blog_media___image.value[0].url;
+		blogSummary.querySelector(".blog-image").src = blogMediaImageURL;
 	}
-    blogSummary.querySelector(".summary-author").textContent = getAuthor(blog.elements.author.value[0], modularContent);
-    var blogDate = new Date(blog.elements.post_date.value);
-    blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
-    blogSummary.querySelector(".summary-body").innerHTML = blog.elements.body.value.substr(0, blog.elements.body.value.indexOf("</p>"));
+
+	const authorContent = firstOrDefaultContent(blog, modularContent, "author");
+	const authorName = firstOrDefaultValue(authorContent, "full_name") || "(none)";
+
+	blogSummary.querySelector(".summary-author").textContent = authorName;
+
+	const postDate = firstOrDefaultValue(blog, "post_date");
+	if (postDate) {
+		try {
+			const blogDate = new Date(postDate);
+			blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
+		} catch(e) {
+			console.warn("Blog post date couldn't be parsed for " + JSON.stringify(blog));
+		}
+	}
+
+	const body = firstOrDefaultValue(blog, "body") || "";
+	blogSummary.querySelector(".summary-body").innerHTML = body.substr(0, body.indexOf("</p>"));
+
 	processMediaContent(blogSummary, modularContent);
 	return blogSummary;
 }
-
 
 function getAuthor(keyName, data)
 {
@@ -108,3 +126,5 @@ String.prototype.format = function (args) {
 };
 String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 /* /String format function */
+
+window.addEventListener("DOMContentLoaded", initiateBlogSummaryList);
