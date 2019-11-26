@@ -1,30 +1,4 @@
 ﻿
-/* Hero Header Section */
-.hero-section {
-    background: url("../images/header.jpg") 50% no-repeat;
-    background-size: cover;
-    height: 60vh;
-    max-height: 350px;
-    margin-bottom: 30px;
-    text-align: center;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-}
-
-.hero-section .hero-section-text {
-    color: #fefefe;
-    text-shadow: 1px 1px 2px #0a0a0a;
-}
-/* /Hero Header Section */
-
-
 /* Blog Post */
 .summary-blog-post {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.06);
