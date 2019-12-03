@@ -1,5 +1,4 @@
 import { firstOrDefaultValue, firstOrDefaultContent } from "/js/parsing.js";
-//$(document).foundation()
 
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
@@ -16,13 +15,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
     initiateEventListeners();
 });
 
+
 function initiateEventListeners() {
     document.querySelector("main").addEventListener("click", function(e) {
        if (e.target.classList.contains("blog-preview-toggle")) {
            toggleBlogPreview(e.target);
        }
     });
+    document.querySelector("#loadMoreBlogItems").addEventListener("click", loadNextBlogBatch);
 }
+
 
 async function fetchKontent(api)
 {
@@ -40,8 +42,8 @@ async function fetchKontent(api)
 
 async function initiateBlogSummaryList()
 {
-    const params = itemsParams.format(["true", pageSize, "post_date[desc]"]);
-	const api = apiItems.format([projectId, params]);
+    const params = formatString(itemsParams, ["true", pageSize, "post_date[desc]"]);
+    const api = formatString(apiItems, [projectId, params]);
 	const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
@@ -55,14 +57,14 @@ async function initiateBlogSummaryList()
         setNextBatchLoad(json.pagination.next_page);
     } else {
         errorMessage = getApiError();
-        document.getElementById("btnLoadMore").setAttribute("style", "display:none;");
+        document.getElementById("loadMoreBlogItems").setAttribute("style", "display:none;");
         document.querySelector("main").appendChild(errorMessage);
     }
 }
 
 
 async function loadNextBlogBatch() {
-    var btnLoadMore = document.getElementById("btnLoadMore");
+    var btnLoadMore = document.getElementById("loadMoreBlogItems");
     const api = btnLoadMore.dataset.next_page;
     const json = await fetchKontent(api);
 
@@ -87,7 +89,7 @@ async function loadNextBlogBatch() {
 
 
 function setNextBatchLoad(nextBatchUrl) {
-    var btnLoadMore = document.getElementById("btnLoadMore");
+    var btnLoadMore = document.getElementById("loadMoreBlogItems");
     if (nextBatchUrl !== "") {
         btnLoadMore.dataset.next_page = nextBatchUrl;
         btnLoadMore.style.removeProperty("display");
@@ -133,7 +135,7 @@ function buildBlogSummary(blog, modularContent)
     const body = firstOrDefaultValue(blog, "body") || "";
 	blogSummary.querySelector(".summary-body").innerHTML = body;
 
-    processMediaContent(blogSummary, modularContent);
+    processContentSnippets(blogSummary, modularContent);
 	return blogSummary;
 }
 
@@ -149,51 +151,31 @@ function toggleBlogPreview(el)
 }
 
 
-function getAuthor(keyName, data)
-{
-	var author = "";
-    for (var key in data) {
-        if (data.hasOwnProperty(key))
-        {
-            if (key === keyName) { author = "by " + data[key].elements.full_name.value; }
-        }
-    }
-    return author;
-}
-
-
-function processMediaContent(blogSummary, data)
+function processContentSnippets(blogSummary, data)
 {
     for (var key in data) {
-    if (data.hasOwnProperty(key))
-    {
-        if (data[key].system.type === "media_embed")
-        {
-            var objMediaEmbed = blogSummary.querySelector("[data-codename='" + key + "']");
-            if (objMediaEmbed !== null)
-            {
-                var elementMediaEmbed = document.createElement('div');
-                elementMediaEmbed.innerHTML = data[key].elements.media_item__text.value;
-                objMediaEmbed.parentNode.replaceChild(elementMediaEmbed, objMediaEmbed);
-            }
-        }
-        if (data[key].system.type === "code_snippet")
-        {
-            var objCodeSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
-            if (objCodeSnippet !== null) {
-                var elementCodeSnippet = document.createElement('pre');
-                if (data[key].elements.language.value[0].codename === "html")
-                {
-                    elementCodeSnippet.innerHTML = htmlentities.encode(data[key].elements.code.value);
-                } else
-                {
-                    elementCodeSnippet.innerHTML = data[key].elements.code.value;
+        if (data.hasOwnProperty(key)) {
+            if (data[key].system.type === "media_embed") {
+                var objMediaEmbed = blogSummary.querySelector("[data-codename='" + key + "']");
+                if (objMediaEmbed !== null) {
+                    var elementMediaEmbed = document.createElement('div');
+                    elementMediaEmbed.innerHTML = data[key].elements.media_item__text.value;
+                    objMediaEmbed.parentNode.replaceChild(elementMediaEmbed, objMediaEmbed);
                 }
-                objCodeSnippet.parentNode.replaceChild(elementCodeSnippet, objCodeSnippet);
+            }
+            if (data[key].system.type === "code_snippet") {
+                var objCodeSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
+                if (objCodeSnippet !== null) {
+                    var elementCodeSnippet = document.createElement('pre');
+                    if (data[key].elements.language.value[0].codename === "html") {
+                        elementCodeSnippet = document.createElement('xmp');
+                    }
+                    elementCodeSnippet.innerHTML = data[key].elements.code.value;
+                    objCodeSnippet.parentNode.replaceChild(elementCodeSnippet, objCodeSnippet);
+                }
             }
         }
     }
-	}
 }
 
 
@@ -202,47 +184,11 @@ function getApiError() {
 }
 
 
-
-/* String format function */
-String.prototype.format = function (args) {
-	var str = this;
-	return str.replace(String.prototype.format.regex, function(item) {
-		var intVal = parseInt(item.substring(1, item.length - 1));
-		var replace;
-		if (intVal >= 0) {
-			replace = args[intVal];
-		} else if (intVal === -1) {
-			replace = "{";
-		} else if (intVal === -2) {
-			replace = "}";
-		} else {
-			replace = "";
-		}
-		return replace;
-	});
-};
-String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
-/* /String format function */
-
-
-/* Encode/Decode html */
-/* https://ourcodeworld.com/articles/read/188/encode-and-decode-html-entities-using-pure-javascript */
-(function (window) {
-    window.htmlentities = {
-        encode: function (str) {
-            var buf = [];
-
-            for (var i = str.length - 1; i >= 0; i--) {
-                buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
-            }
-
-            return buf.join('');
-        },
-        decode: function (str) {
-            return str.replace(/&#(\d+);/g, function (match, dec) {
-                return String.fromCharCode(dec);
-            });
+function formatString(str, args) {
+    if (args.length > 0) {
+        for (var i = 0; i < args.length; i++) {
+            str = str.replace("{" + i + "}", args[i]);
         }
-    };
-})(window);
-/* /Encode/Decode html */
+    }
+    return str;
+}
