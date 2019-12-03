@@ -1,3 +1,4 @@
+import { firstOrDefaultValue, firstOrDefaultContent } from "/js/parsing.js";
 //$(document).foundation()
 
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
@@ -12,8 +13,16 @@ const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 
 window.addEventListener('DOMContentLoaded', (event) => {
     initiateBlogSummaryList();
+    initiateEventListeners();
 });
 
+function initiateEventListeners() {
+    document.querySelector("main").addEventListener("click", function(e) {
+       if (e.target.classList.contains("blog-preview-toggle")) {
+           toggleBlogPreview(e.target);
+       }
+    });
+}
 
 async function fetchKontent(api)
 {
@@ -34,7 +43,6 @@ async function initiateBlogSummaryList()
     const params = itemsParams.format(["true", pageSize, "post_date[desc]"]);
 	const api = apiItems.format([projectId, params]);
 	const json = await fetchKontent(api);
-	console.log(json);
 
     if (json.items.length > 0) {
         var blogSummary = "";
@@ -92,29 +100,47 @@ function scrollToItem(itemId) {
     item.scrollIntoView();
 }
 
-
 function buildBlogSummary(blog, modularContent)
 {
     const blogSummary = document.importNode(blogSummaryTemplate.content, true);
-    const blogSummaryTitle = blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
+
+    const title = firstOrDefaultValue(blog, "title") || "unknown";
+    blogSummary.querySelector(".summary-title").textContent = title;
+
     blogSummary.querySelector(".summary-blog-post").dataset.item_id = blog.system.id;
     blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
-	if (blog.elements.blog_media___image.value.length > 0)
+
+    const blogMediaImageURL = firstOrDefaultValue(blog, "blog_media___image", "url");
+	if (blogMediaImageURL)
 	{
-		blogSummary.querySelector(".blog-image").src = blog.elements.blog_media___image.value[0].url;
-	}
-    blogSummary.querySelector(".summary-author").textContent = getAuthor(blog.elements.author.value[0], modularContent);
-    var blogDate = new Date(blog.elements.post_date.value);
-    blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
-    blogSummary.querySelector(".summary-body").innerHTML = blog.elements.body.value;
-	processMediaContent(blogSummary, modularContent);
+		blogSummary.querySelector(".blog-image").src = blogMediaImageURL;
+    }
+
+    const authorContent = firstOrDefaultContent(blog, modularContent, "author");
+    const authorName = firstOrDefaultValue(authorContent, "full_name") || "(none)";
+    blogSummary.querySelector(".summary-author").textContent = authorName;
+
+    const postDate = firstOrDefaultValue(blog, "post_date");
+    if(postDate) {
+        try {
+            const blogDate = new Date(postDate);
+            blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
+        } catch(e) {
+            console.warn("Blog post date couldn't be parsed for " + JSON.stringify(blog));
+        }
+    }
+
+    const body = firstOrDefaultValue(blog, "body") || "";
+	blogSummary.querySelector(".summary-body").innerHTML = body;
+
+    processMediaContent(blogSummary, modularContent);
 	return blogSummary;
 }
 
 
 function toggleBlogPreview(el)
 {
-    itemId = el.dataset.item_id;
+    const itemId = el.dataset.item_id;
     var itemContainer = document.querySelector('div[data-item_id="' + itemId + '"]');
     var itemSummary = itemContainer.querySelector(".summary-body");
     itemSummary.classList.toggle("blog-preview");
