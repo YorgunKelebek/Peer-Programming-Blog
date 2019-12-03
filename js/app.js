@@ -96,7 +96,7 @@ function scrollToItem(itemId) {
 function buildBlogSummary(blog, modularContent)
 {
     const blogSummary = document.importNode(blogSummaryTemplate.content, true);
-    blogSummaryTitle = blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
+    const blogSummaryTitle = blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
     blogSummary.querySelector(".summary-blog-post").dataset.item_id = blog.system.id;
     blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
 	if (blog.elements.blog_media___image.value.length > 0)
