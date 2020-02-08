@@ -1,4 +1,13 @@
 ﻿
+
+
+aside h1 {
+    font-size: 1.5em;
+    border-bottom: 2px solid #76c158;
+    margin-bottom: 1rem;
+}
+
+
 /* Blog Post */
 .summary-blog-post {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.06);
@@ -45,3 +54,28 @@
 }
 /* /Blog Post */
 
+
+/* Blog tags */
+.aside-blog-tags {
+    margin-bottom: 30px;
+}
+
+.aside-blog-tags a {
+    display: inline-block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0;
+    font-size: 0.8rem;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 5000px;
+    background: #e6e6e6;
+    display: inline-block;
+    color: #808080;
+    margin: 3px;
+}
+
+.aside-blog-tags a:hover {
+    background: #808080;
+    color: #fff;
+}
+/* Blog tags */
