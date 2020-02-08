@@ -9,11 +9,9 @@ const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 
-
 window.addEventListener('DOMContentLoaded', (event) => {
     initiateBlogSummaryList();
 });
-
 
 async function fetchKontent(api)
 {
@@ -97,16 +95,19 @@ function buildBlogSummary(blog, modularContent)
 {
     const blogSummary = document.importNode(blogSummaryTemplate.content, true);
     const blogSummaryTitle = blogSummary.querySelector(".summary-title").textContent = blog.elements.title.value;
-    blogSummary.querySelector(".summary-blog-post").dataset.item_id = blog.system.id;
-    blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
-	if (blog.elements.blog_media___image.value.length > 0)
+    if (blog.elements.blog_media___image.value.length > 0)
 	{
 		blogSummary.querySelector(".blog-image").src = blog.elements.blog_media___image.value[0].url;
 	}
     blogSummary.querySelector(".summary-author").textContent = getAuthor(blog.elements.author.value[0], modularContent);
     var blogDate = new Date(blog.elements.post_date.value);
     blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
-    blogSummary.querySelector(".summary-body").innerHTML = blog.elements.body.value;
+
+    const iframe = document.createElement("IFRAME");
+    iframe.setAttribute("sandbox", "");
+    iframe.src = `data:text/html;charset=utf-8,${escape(blog.elements.body.value)}`;
+    blogSummary.querySelector("article").appendChild(iframe);
+
 	processMediaContent(blogSummary, modularContent);
 	return blogSummary;
 }

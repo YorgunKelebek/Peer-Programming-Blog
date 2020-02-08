@@ -2,58 +2,48 @@
 <html class="no-js" dir="ltr" lang="en">
 
 <head>
-<meta charset="utf-8" />
-<meta content="ie=edge" http-equiv="x-ua-compatible" />
-<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Blog - Peer Programming</title>
-<link href="css/foundation.min.css" rel="stylesheet" />
-<link href="css/app.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta content="ie=edge" http-equiv="x-ua-compatible" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Blog - Peer Programming</title>
+    <style>
+        body {
+            font-family: Arial;
+        }
+        iframe {
+            width: 100%;
+            border: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="grid-container">
 
-        <div class="grid-x grid-padding-x">
-            <div class="large-9 medium-9 cell">
-                <section>
-                    <main>
-                    </main>
-                    <p><a id="btnLoadMore" class="button" onclick="loadNextBlogBatch();">Load More</a></p>
-                </section>
+    <main>
+    </main>
+    <p><a id="btnLoadMore" class="button" onclick="loadNextBlogBatch();">Load More</a></p>
+
+    <template id="blog_summary_template">
+        <article>
+            <img class="blog-image" />
+            <p class="meta-data">
+                <span class="summary-date"></span> &bull; <a class="summary-author"></a>
+            </p>
+            <h1 class="summary-title"></h1>
+        </article>
+    </template>
+
+    <template id="api_error_message">
+        <article>
+
+            <div class="callout alert">
+                <h5>Error</h5>
+                <p><strong>We are very sorry.</strong> There has been an error while fetching the content. Please try
+                    again. If the problem persists, please visit this page later.</p>
             </div>
-        </div>
 
-        <!-- TEMPLATES -->
-        <template id="blog_summary_template">
-            <article>
-
-                <div class="summary-blog-post">
-                    <div class="blog-image-container">
-                        <img class="blog-image " />
-                    </div>
-                    <div class="summary-blog-section">
-                        <p class="meta-data"><span class="summary-date"></span> &bull; <a class="summary-author"></a></p>
-                        <h1 class="summary-title"></h1>
-                        <p class="summary-body blog-preview"></p>
-                        <p><a class="button secondary blog-preview-toggle" onclick="toggleBlogPreview(this)">Read more</a></p>
-                    </div>
-                </div>
-
-            </article>
-        </template>
-
-        <template id="api_error_message">
-            <article>
-
-                <div class="callout alert">
-                    <h5>Error</h5>
-                    <p><strong>We are very sorry.</strong> There has been an error while fetching the content. Please try again. If the problem persists, please visit this page later.</p>
-                </div>
-
-            </article>
-        </template>
-        <!-- /TEMPLATES -->
-    </div>
+        </article>
+    </template>
 
     <script src="js/app.js" type="module"></script>
 </body>
