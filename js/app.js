@@ -3,15 +3,19 @@ import { firstOrDefaultValue, firstOrDefaultContent } from "/js/parsing.js";
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
 const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
-const pageSize = 10;
+const apiTaxonomies = "https://deliver.kontent.ai/{0}/taxonomies/{1}";
 const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
+const itemsForTagParams = "&elements.blog_tags[contains]={0}";
+const pageSize = 10;
 
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
+const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
     initiateBlogSummaryList();
+    loadAsideBlogTags();
     initiateEventListeners();
 });
 
@@ -56,7 +60,7 @@ async function initiateBlogSummaryList()
         }
         setNextBatchLoad(json.pagination.next_page);
     } else {
-        errorMessage = getApiError();
+        var errorMessage = getApiError();
         document.getElementById("loadMoreBlogItems").setAttribute("style", "display:none;");
         document.querySelector("main").appendChild(errorMessage);
     }
@@ -82,7 +86,7 @@ async function loadNextBlogBatch() {
             scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
-        errorMessage = getApiError();
+        var errorMessage = getApiError();
         document.querySelector("main").appendChild(errorMessage);
     }
 }
@@ -94,6 +98,32 @@ function setNextBatchLoad(nextBatchUrl) {
         btnLoadMore.dataset.next_page = nextBatchUrl;
         btnLoadMore.style.removeProperty("display");
     } else { btnLoadMore.style.display = "none"; }
+}
+
+
+async function loadBlogItemsForTag(tag) {
+    var btnLoadMoreBlogItems = document.getElementById("loadMoreBlogItems");
+    const params = formatString(itemsParams, ["true", pageSize, "post_date[desc]"]) + formatString(itemsForTagParams, [tag]);
+    const api = formatString(apiItems, [projectId, params]);
+    const json = await fetchKontent(api);
+
+    document.querySelector("main").innerHTML = "";
+    if (json.items.length > 0) {
+        if (json.pagination.count > 0) {
+            btnLoadMoreBlogItems.dataset.first_item = json.items[0].system.id;
+            var blogSummary = "";
+            for (var i = 0; i < json.pagination.count; i++) {
+                blogSummary = buildBlogSummary(json.items[i], json.modular_content);
+                document.querySelector("main").appendChild(blogSummary);
+            }
+            setNextBatchLoad(json.pagination.next_page);
+            scrollToItem(btnLoadMoreBlogItems.dataset.first_item);
+        }
+    } else {
+        var errorMessage = getNoResultsMessage();
+        if (json.error) { errorMessage = getApiErrorMessage(); }
+        document.querySelector("main").appendChild(errorMessage);
+    }
 }
 
 
@@ -146,8 +176,39 @@ function toggleBlogPreview(el)
     var itemContainer = document.querySelector('div[data-item_id="' + itemId + '"]');
     var itemSummary = itemContainer.querySelector(".summary-body");
     itemSummary.classList.toggle("blog-preview");
-    el.innerHTML = itemSummary.classList.contains("blog-preview") ? "Read more" : "Close";
+    el.innerHTML = itemSummary.classList.contains("blog-preview") ? "Read more" : "Read less";
     scrollToItem(itemId);
+}
+
+
+async function loadAsideBlogTags() {
+    const api = formatString(apiTaxonomies, [projectId, "blog_tags"]);
+    const json = await fetchKontent(api);
+    console.log(json);
+
+    if (json.terms.length > 0) {
+        var elementAsideBlogTagsHeading = document.createElement('h1');
+        elementAsideBlogTagsHeading.innerHTML = "Tags";
+        document.querySelector(".aside-blog-tags").appendChild(elementAsideBlogTagsHeading);
+        for (var i = 0; i < json.terms.length; i++) {
+            appendBlogTagToTagCloud(json.terms[i]);
+        }
+    }
+}
+
+
+function appendBlogTagToTagCloud(blogTag) {
+    var elementBlogTag = document.createElement('a');
+    elementBlogTag.innerHTML = blogTag.name;
+    elementBlogTag.addEventListener('click', function () {
+        loadBlogItemsForTag(blogTag.codename);
+    });
+    document.querySelector(".aside-blog-tags").appendChild(elementBlogTag);
+    if (blogTag.terms.length > 0) {
+        for (var i = 0; i < blogTag.terms.length; i++) {
+            appendBlogTagToTagCloud(blogTag.terms[i]);
+        }
+    }
 }
 
 
@@ -179,8 +240,13 @@ function processContentSnippets(blogSummary, data)
 }
 
 
-function getApiError() {
+function getApiErrorMessage() {
     return document.importNode(apiErrorMessageTemplate.content, true);
+}
+
+
+function getNoResultsMessage() {
+    return document.importNode(apiNoResultsMessageTemplate.content, true);
 }
 
 
