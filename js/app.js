@@ -60,7 +60,7 @@ async function initiateBlogSummaryList()
         }
         setNextBatchLoad(json.pagination.next_page);
     } else {
-        var errorMessage = getApiError();
+        var errorMessage = getApiErrorMessage();
         document.getElementById("loadMoreBlogItems").setAttribute("style", "display:none;");
         document.querySelector("main").appendChild(errorMessage);
     }
@@ -86,7 +86,7 @@ async function loadNextBlogBatch() {
             scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
-        var errorMessage = getApiError();
+        var errorMessage = getApiErrorMessage();
         document.querySelector("main").appendChild(errorMessage);
     }
 }
@@ -184,8 +184,6 @@ function toggleBlogPreview(el)
 async function loadAsideBlogTags() {
     const api = formatString(apiTaxonomies, [projectId, "blog_tags"]);
     const json = await fetchKontent(api);
-    console.log(json);
-
     if (json.terms.length > 0) {
         var elementAsideBlogTagsHeading = document.createElement('h1');
         elementAsideBlogTagsHeading.innerHTML = "Tags";
