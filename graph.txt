@@ -1,0 +1,19 @@
+digraph G {
+
+    rankdir=LR
+    node [ fontsize=6; fontname=arial; shape=box; penwidth=0.5; margin=0; width=1; ]
+    edge [ fontsize=6; fontname=arial; penwidth=0.5; arrowsize=0.5 ]
+
+    subgraph done {
+        node [ fillcolor=green; style=filled; color=chartreuse3 ]
+        QueryStringPatcher
+        Fetcher
+    }
+
+    QueryStringPatcher
+    -> Fetcher
+    -> DataArtist
+    -> NodeArtist
+    DOMContentLoaded -> NodeArtist
+
+}
