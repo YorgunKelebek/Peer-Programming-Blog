@@ -1,6 +1,6 @@
 const currentURL = new URL(location.href);
 
-function decodedValue(key) {
+function decodedValueFromCurrentURL(key) {
     try {
         return decodeURIComponent(currentURL.searchParams.get(key));
     } catch(err) {
@@ -12,13 +12,13 @@ const combineExistingValuesWithURLSearchParamValue =
     (existingValues, key) =>
         ({
             ...existingValues,
-            [key]: decodedValue(key)
+            [key]: decodedValueFromCurrentURL(key)
         });
 
 const queryStringPatcher =
-    data =>
+    defaultValues =>
         Array.from(currentURL.searchParams.keys())
-            .filter(key => key in data)
-            .reduce(combineExistingValuesWithURLSearchParamValue, data);
+            .filter(key => key in defaultValues)
+            .reduce(combineExistingValuesWithURLSearchParamValue, defaultValues);
 
 export default queryStringPatcher;
