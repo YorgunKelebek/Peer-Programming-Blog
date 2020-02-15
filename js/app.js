@@ -1,4 +1,4 @@
-import { firstOrDefaultValue, firstOrDefaultContent } from "/js/parsing.js";
+import { firstOrDefaultValue, firstOrDefaultContent } from "./parsing.js";
 
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
@@ -48,7 +48,7 @@ async function fetchKontent(api)
 async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
     const params = formatString(itemsParams, ["true", pageSize, "post_date[desc]"]) + (tag ? formatString(itemsForTagParams, [tag]) : "");
-    const api = btnLoadMore.dataset.next_page ? btnLoadMore.dataset.next_page : formatString(apiItems, [projectId, params]);
+    const api = btnLoadMore.dataset.next_page || formatString(apiItems, [projectId, params]);
 
     const json = await fetchKontent(api);
 
@@ -66,8 +66,7 @@ async function loadBlogItems() {
             scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
-        var errorMessage = getNoResultsMessage();
-        if (json.error) { errorMessage = getApiErrorMessage(); }
+        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage()
         document.querySelector("main").appendChild(errorMessage);
     }
 }
@@ -166,8 +165,10 @@ function appendBlogTagToTagCloud(blogTag) {
 
 
 function navigateToBlogs(blogTag) {
-    var urlToNavigate = location.protocol + '//' + location.host + location.pathname;
-    window.location.href = urlToNavigate + (blogTag ? "?tag=" + blogTag : "");
+    const baseURL = location.href;
+    const url = new URL(location.pathname, baseURL);
+    if (blogTag) { url.searchParams.set("tag", blogTag); }
+    location.href = url.toString();
 }
 
 
