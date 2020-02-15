@@ -4,14 +4,19 @@ const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
 const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
 const apiTaxonomies = "https://deliver.kontent.ai/{0}/taxonomies/{1}";
-const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
-const itemsForTagParams = "&elements.blog_tags[contains]={0}";
+
 const pageSize = 10;
 const tag = getUrlParamater("tag");
+
+const itemsParams = (withTotal, pageSize, orderProp) => 
+    `?includeTotalCount=${withTotal}&limit=${pageSize}&order=elements.${orderProp}`;
+const itemsForTagParams = tagContent => 
+    `&elements.blog_tags[contains]=${tagContent}`;
 
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
+
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -44,12 +49,10 @@ async function fetchKontent(api)
     }
 }
 
-
 async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
-    const params = formatString(itemsParams, ["true", pageSize, "post_date[desc]"]) + (tag ? formatString(itemsForTagParams, [tag]) : "");
-    const api = btnLoadMore.dataset.next_page || formatString(apiItems, [projectId, params]);
-
+    const params = itemsParams(true, pageSize, "post_date[desc]") + (tag ? itemsForTagParams(tag) : "");
+    const api = btnLoadMore.dataset.next_page ? btnLoadMore.dataset.next_page : formatString(apiItems, [projectId, params]);
     const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
