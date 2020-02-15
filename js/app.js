@@ -2,7 +2,7 @@ import { pageOptions } from "./app/page-options.js";
 import { prepareData } from "./app/prepare-data.js";
 import { DOMContentLoaded } from "./lib/DOM.js";
 
-(async function() {
+(async function main() {
 
     const preparingData = prepareData(pageOptions);
     await DOMContentLoaded();
