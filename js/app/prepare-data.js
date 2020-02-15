@@ -1,19 +1,24 @@
 import fetcher from "../lib/fetcher.js";
 import dataArtist from "../lib/data-artist.js";
 
-const modularContentArtist = dataArtist({
-    contentType: ["system", "type"],
-    name: ["elements", "full_name", "value"]
-});
+// some parsing functions
 
-const authors = {};
-
+const authorIndex = {};
 function findAuthorName(key) {
-    const author = authors[key];
+    const author = authorIndex[key];
     return author ? author.name : undefined;
 }
 
 const parseISODate = x => new Date(x);
+
+const calculateCurrentPage = p => p.skip ? (p.skip / p.limit) + 1 : 1;
+
+// three data artists we need
+
+const modularContentArtist = dataArtist({
+    contentType: ["system", "type"],
+    name: ["elements", "full_name", "value"]
+});
 
 const blogDataArtist = dataArtist({
     id: ["system", "id"],
@@ -27,8 +32,10 @@ const pagingArtist = dataArtist({
     next: ["pagination", "next_page"],
     count: ["pagination", "count"],
     total_count: ["pagination", "total_count"],
-    page: ["pagination", p => p.skip ? (p.skip / p.limit) + 1 : 1]
+    page: ["pagination", calculateCurrentPage]
 });
+
+// the main function
 
 export async function prepareData({ baseURI, resource }) {
 
@@ -37,13 +44,18 @@ export async function prepareData({ baseURI, resource }) {
     const data = await fetcher(dataURI, res => res.json());
 
     // pull out the authors
-    const modularContent = Object.entries(data.modular_content)
-        .map(([key, object]) => [key, modularContentArtist(object)])
-    const authorContent = modularContent.filter(([_, x]) => x.contentType === "author");
-    for (const author of authorContent) {
-        const [key, object] = author;
-        authors[key] = object;
-    }
+    Object.entries(data.modular_content)
+        // we only want the modular content where the type is "author"
+        .filter(entry => entry[1].contentType === "author")
+        // for each key and raw data object,
+        .forEach(entry => {
+
+            const [ key, rawData ] = entry;
+            // store the output of the data artist in our author index
+            authorIndex[key] = modularContentArtist(rawData);
+
+        });
+
     // get blogs
     const blogs = data.items.map(blogDataArtist);
     // get pagination
