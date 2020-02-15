@@ -50,10 +50,9 @@ const pagingArtist = dataArtist({
 
 async function prepareData() {
 
+    // fetch the raw data
     const dataURI = `${pageOptions.baseURI}${pageOptions.resource}`;
     const data = await fetcher(dataURI, res => res.json());
-
-    console.log(data);
 
     // pull out the authors
     const modularContent = Object.entries(data.modular_content)
@@ -68,8 +67,9 @@ async function prepareData() {
     // get pagination
     const paging = pagingArtist(data);
 
-console.log(blogs);
-console.log(paging);
+console.log("data", data);
+console.log("blogs", blogs);
+console.log("paging", paging);
 
 
 }
