@@ -2,7 +2,7 @@ import dataArtist from "../lib/data-artist.js";
 
 // some parsing functions
 
-const authorIndex = {};
+export const authorIndex = {};
 function findAuthorName(key) {
     const author = authorIndex[key];
     return author ? author.name : undefined;
@@ -20,11 +20,12 @@ export const modularContentArtist = dataArtist({
 });
 
 export const blogDataArtist = dataArtist({
-    id: ["system", "id"],
+    id: ["system", "code_name"],
     author: ["elements", "author", "value", 0, findAuthorName],
     title: ["elements", "title", "value"],
     posted: ["elements", "post_date", "value", parseISODate],
-    modified: ["system", "last_modified", parseISODate]
+    modified: ["system", "last_modified", parseISODate],
+    tags: ["elements", "blog_tags", "value"]
 });
 
 export const pagingArtist = dataArtist({

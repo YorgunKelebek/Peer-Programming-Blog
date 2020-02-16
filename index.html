@@ -1,52 +1,33 @@
 ﻿<!doctype html>
-<html class="no-js" dir="ltr" lang="en">
+<html>
 
 <head>
     <meta charset="utf-8" />
-    <meta content="ie=edge" http-equiv="x-ua-compatible" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta content="99b0b3b0-4838-0051-3d57-8af72f55e8a0" name="project-id" />
     <script type="module" src="js/app.js"></script>
     <title>Blog - Peer Programming</title>
-    <style>
-        body {
-            font-family: Arial;
-        }
-        iframe {
-            width: 100%;
-            border: none;
-        }
-    </style>
 </head>
 
 <body>
 
     <main>
+
+        <ol class="blogs">
+        </ol>
+
     </main>
-    <p><a id="btnLoadMore" class="button" onclick="loadNextBlogBatch();">Load More</a></p>
-
-    <template id="blog_summary_template">
-        <article>
-            <img class="blog-image" />
-            <p class="meta-data">
-                <span class="summary-date"></span> &bull; <a class="summary-author"></a>
-            </p>
-            <h1 class="summary-title"></h1>
-        </article>
+    <template id="blog-list-item">
+        <li class="blog">
+            <span class="author" data-content="author"></span>
+            <a class="title" data-content="title"></a>
+            <span class="post-date" data-content="postDate"></span>
+            <ul class="tags">
+                <li>Chess</li>
+                <li>Winning</li>
+            </ul>
+        </li>
     </template>
-
-    <template id="api_error_message">
-        <article>
-
-            <div class="callout alert">
-                <h5>Error</h5>
-                <p><strong>We are very sorry.</strong> There has been an error while fetching the content. Please try
-                    again. If the problem persists, please visit this page later.</p>
-            </div>
-
-        </article>
-    </template>
-
 </body>
 
 </html>

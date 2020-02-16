@@ -1,5 +1,5 @@
 import fetcher from "../lib/fetcher.js";
-import { modularContentArtist, blogDataArtist, pagingArtist } from "./data-artists.js";
+import { modularContentArtist, blogDataArtist, pagingArtist, authorIndex } from "./data-artists.js";
 
 // the main function
 
@@ -12,7 +12,7 @@ export async function prepareData({ baseURI, resource }) {
     // pull out the authors
     Object.entries(data.modular_content)
         // we only want the modular content where the type is "author"
-        .filter(entry => entry[1].contentType === "author")
+        .filter(entry => entry[1].system.type === "author")
         // for each key and raw data object,
         .forEach(entry => {
 

@@ -5,8 +5,8 @@ if (!projectMetaTag) throw new Error("You need to define a <meta> tag with the p
 const projectId = projectMetaTag.content;
 
 const defaultResourceQuery = new URLSearchParams({
-    limit: 3,
-    elements: "author,title,post_date,blog_tage,full_name,avatar",
+    limit: 10,
+    elements: "author,title,post_date,blog_tags,full_name,avatar",
     order: "elements.post_date[desc]",
     includeTotalCount: true,
     "system.type": "blog_post"
