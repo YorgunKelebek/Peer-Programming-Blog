@@ -6,16 +6,16 @@ const pageSize = 10;
 
 class URLBuilder {
     constructor(baseURL) {
-        this.contentCodeName = "";
+        this.contentCodeName = null;
         this.includeTotalCount = true;
         this.limit = null;
         this.orderByElementProp = null;
         this.blogTagsContains = null;
-        this.baseURL = new URL(baseURL + this.contentCodeName);
+        this.baseURL = new URL(baseURL);
     }
 
     build() {
-        const working = new URL(this.baseURL + (this.contentCodeName));
+        const working = new URL(this.baseURL + (this.contentCodeName || ""));
         const searchParams = working.searchParams;
         if (this.includeTotalCount) searchParams.set("includeTotalCount", this.includeTotalCount);
         if (this.limit) searchParams.set("limit", this.limit);
