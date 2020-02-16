@@ -1,20 +1,26 @@
-import { firstOrDefaultValue, firstOrDefaultContent } from "/js/parsing.js";
+import { firstOrDefaultValue, firstOrDefaultContent } from "./parsing.js";
 
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
 const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
 const apiTaxonomies = "https://deliver.kontent.ai/{0}/taxonomies/{1}";
-const itemsParams = "?includeTotalCount={0}&limit={1}&order=elements.{2}";
-const itemsForTagParams = "&elements.blog_tags[contains]={0}";
+
 const pageSize = 10;
+const tag = getUrlParamater("tag");
+
+const itemsParams = (withTotal, pageSize, orderProp) => 
+    `?includeTotalCount=${withTotal}&limit=${pageSize}&order=elements.${orderProp}`;
+const itemsForTagParams = tagContent => 
+    `&elements.blog_tags[contains]=${tagContent}`;
 
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
 
 
+
 window.addEventListener('DOMContentLoaded', (event) => {
-    initiateBlogSummaryList();
+    loadBlogItems();
     loadAsideBlogTags();
     initiateEventListeners();
 });
@@ -26,7 +32,7 @@ function initiateEventListeners() {
            toggleBlogPreview(e.target);
        }
     });
-    document.querySelector("#loadMoreBlogItems").addEventListener("click", loadNextBlogBatch);
+    document.querySelector("#loadMoreBlogItems").addEventListener("click", loadBlogItems);
 }
 
 
@@ -43,33 +49,10 @@ async function fetchKontent(api)
     }
 }
 
-
-async function initiateBlogSummaryList()
-{
-    const params = formatString(itemsParams, ["true", pageSize, "post_date[desc]"]);
-    const api = formatString(apiItems, [projectId, params]);
-	const json = await fetchKontent(api);
-
-    if (json.items.length > 0) {
-        var blogSummary = "";
-        for (var i = 0; i < json.pagination.count; i++) {
-            if (json.items[i].system.type === "blog_post") {
-                blogSummary = buildBlogSummary(json.items[i], json.modular_content);
-                document.querySelector("main").appendChild(blogSummary);
-            }
-        }
-        setNextBatchLoad(json.pagination.next_page);
-    } else {
-        var errorMessage = getApiErrorMessage();
-        document.getElementById("loadMoreBlogItems").setAttribute("style", "display:none;");
-        document.querySelector("main").appendChild(errorMessage);
-    }
-}
-
-
-async function loadNextBlogBatch() {
+async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
-    const api = btnLoadMore.dataset.next_page;
+    const params = itemsParams(true, pageSize, "post_date[desc]") + (tag ? itemsForTagParams(tag) : "");
+    const api = btnLoadMore.dataset.next_page ? btnLoadMore.dataset.next_page : formatString(apiItems, [projectId, params]);
     const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
@@ -86,7 +69,7 @@ async function loadNextBlogBatch() {
             scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
-        var errorMessage = getApiErrorMessage();
+        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage()
         document.querySelector("main").appendChild(errorMessage);
     }
 }
@@ -98,32 +81,6 @@ function setNextBatchLoad(nextBatchUrl) {
         btnLoadMore.dataset.next_page = nextBatchUrl;
         btnLoadMore.style.removeProperty("display");
     } else { btnLoadMore.style.display = "none"; }
-}
-
-
-async function loadBlogItemsForTag(tag) {
-    var btnLoadMoreBlogItems = document.getElementById("loadMoreBlogItems");
-    const params = formatString(itemsParams, ["true", pageSize, "post_date[desc]"]) + formatString(itemsForTagParams, [tag]);
-    const api = formatString(apiItems, [projectId, params]);
-    const json = await fetchKontent(api);
-
-    document.querySelector("main").innerHTML = "";
-    if (json.items.length > 0) {
-        if (json.pagination.count > 0) {
-            btnLoadMoreBlogItems.dataset.first_item = json.items[0].system.id;
-            var blogSummary = "";
-            for (var i = 0; i < json.pagination.count; i++) {
-                blogSummary = buildBlogSummary(json.items[i], json.modular_content);
-                document.querySelector("main").appendChild(blogSummary);
-            }
-            setNextBatchLoad(json.pagination.next_page);
-            scrollToItem(btnLoadMoreBlogItems.dataset.first_item);
-        }
-    } else {
-        var errorMessage = getNoResultsMessage();
-        if (json.error) { errorMessage = getApiErrorMessage(); }
-        document.querySelector("main").appendChild(errorMessage);
-    }
 }
 
 
@@ -139,8 +96,8 @@ function buildBlogSummary(blog, modularContent)
     const title = firstOrDefaultValue(blog, "title") || "unknown";
     blogSummary.querySelector(".summary-title").textContent = title;
 
-    blogSummary.querySelector(".summary-blog-post").dataset.item_id = blog.system.id;
-    blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
+    blogSummary.querySelector(".summary-blog-post").dataset.item_id =
+        blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
 
     const blogMediaImageURL = firstOrDefaultValue(blog, "blog_media___image", "url");
 	if (blogMediaImageURL)
@@ -199,7 +156,7 @@ function appendBlogTagToTagCloud(blogTag) {
     var elementBlogTag = document.createElement('a');
     elementBlogTag.innerHTML = blogTag.name;
     elementBlogTag.addEventListener('click', function () {
-        loadBlogItemsForTag(blogTag.codename);
+        navigateToBlogs(blogTag.codename);
     });
     document.querySelector(".aside-blog-tags").appendChild(elementBlogTag);
     if (blogTag.terms.length > 0) {
@@ -207,6 +164,14 @@ function appendBlogTagToTagCloud(blogTag) {
             appendBlogTagToTagCloud(blogTag.terms[i]);
         }
     }
+}
+
+
+function navigateToBlogs(blogTag) {
+    const baseURL = location.href;
+    const url = new URL(location.pathname, baseURL);
+    if (blogTag) { url.searchParams.set("tag", blogTag); }
+    location.href = url.toString();
 }
 
 
@@ -245,6 +210,12 @@ function getApiErrorMessage() {
 
 function getNoResultsMessage() {
     return document.importNode(apiNoResultsMessageTemplate.content, true);
+}
+
+
+function getUrlParamater(param) {
+    var urlParams = new URLSearchParams(window.location.search);
+    return urlParams.has(param) ? urlParams.get(param) : undefined;
 }
 
 
