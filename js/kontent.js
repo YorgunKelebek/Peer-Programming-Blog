@@ -1,21 +1,21 @@
 const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
 const apiBlogItems = `https://deliver.kontent.ai/${projectId}/items`;
-const apiBlogItem = `https://deliver.kontent.ai/${projectId}/items/`;
-const apiTaxonomies = `https://deliver.kontent.ai/${projectId}/taxonomies/`;
+const apiBlogPost = `https://deliver.kontent.ai/${projectId}/items/`;
+const apiTaxonomyGroup = `https://deliver.kontent.ai/${projectId}/taxonomies/`;
 const pageSize = 10;
 
 class URLBuilder {
     constructor(baseURL) {
-        this.singleEndpoint = null;
+        this.contentCodeName = "";
         this.includeTotalCount = true;
         this.limit = null;
         this.orderByElementProp = null;
         this.blogTagsContains = null;
-        this.baseURL = new URL(baseURL + (this.singleEndpoint || ""));
+        this.baseURL = new URL(baseURL + this.contentCodeName);
     }
 
     build() {
-        const working = new URL(this.baseURL + (this.singleEndpoint || ""));
+        const working = new URL(this.baseURL + (this.contentCodeName));
         const searchParams = working.searchParams;
         if (this.includeTotalCount) searchParams.set("includeTotalCount", this.includeTotalCount);
         if (this.limit) searchParams.set("limit", this.limit);
@@ -25,8 +25,8 @@ class URLBuilder {
     }
 }
 const itemsFetchKontentApi = new URLBuilder(apiBlogItems);
-const itemFetchKontentApi = new URLBuilder(apiBlogItem);
-const taxonomiesFetchKontentApi = new URLBuilder(apiTaxonomies);
+const itemFetchKontentApi = new URLBuilder(apiBlogPost);
+const taxonomiesFetchKontentApi = new URLBuilder(apiTaxonomyGroup);
 
 
 export function buildBlogItemsUrl(tag) {
@@ -39,13 +39,13 @@ export function buildBlogItemsUrl(tag) {
 
 
 export function buildBlogItemUrl(itemCodeName) {
-    itemFetchKontentApi.singleEndpoint = itemCodeName;
+    itemFetchKontentApi.contentCodeName = itemCodeName;
     return itemFetchKontentApi.build();
 }
 
 
 export function buildTaxonomiesUrl() {
-    taxonomiesFetchKontentApi.singleEndpoint = "blog_tags";
+    taxonomiesFetchKontentApi.contentCodeName = "blog_tags";
     return taxonomiesFetchKontentApi.build();
 }
 
@@ -54,6 +54,7 @@ export async function fetchKontent(api) {
     var resError = { items: [], error: true };
     try {
         const res = await fetch(api);
+        if (!res.ok) throw new Error(`${res.statusText} (${res.status})`);
         const json = await res.json();
         if (json.error_code !== undefined) { return resError; }
         return json;
