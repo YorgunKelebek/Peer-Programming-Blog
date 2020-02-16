@@ -1,22 +1,10 @@
 import { firstOrDefaultValue, firstOrDefaultContent } from "./parsing.js";
+import { buildBlogItemsUrl, buildTaxonomiesUrl, fetchKontent } from "./kontent.js";
 
-const projectId = "99b0b3b0-4838-0051-3d57-8af72f55e8a0";
-const apiItems = "https://deliver.kontent.ai/{0}/items{1}";
-const apiItem = "https://deliver.kontent.ai/{0}/items/{1}";
-const apiTaxonomies = "https://deliver.kontent.ai/{0}/taxonomies/{1}";
-
-const pageSize = 10;
 const tag = getUrlParamater("tag");
-
-const itemsParams = (withTotal, pageSize, orderProp) => 
-    `?includeTotalCount=${withTotal}&limit=${pageSize}&order=elements.${orderProp}`;
-const itemsForTagParams = tagContent => 
-    `&elements.blog_tags[contains]=${tagContent}`;
-
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
-
 
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -36,23 +24,9 @@ function initiateEventListeners() {
 }
 
 
-async function fetchKontent(api)
-{
-    var resError = { items: [], error: true };
-    try {
-        const res = await fetch(api);
-        const json = await res.json();
-        if (json.error_code !== undefined) { return resError; }
-        return json;
-    } catch (error) {
-        return resError;
-    }
-}
-
 async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
-    const params = itemsParams(true, pageSize, "post_date[desc]") + (tag ? itemsForTagParams(tag) : "");
-    const api = btnLoadMore.dataset.next_page ? btnLoadMore.dataset.next_page : formatString(apiItems, [projectId, params]);
+    const api = btnLoadMore.dataset.next_page || buildBlogItemsUrl(tag);
     const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
@@ -139,7 +113,7 @@ function toggleBlogPreview(el)
 
 
 async function loadAsideBlogTags() {
-    const api = formatString(apiTaxonomies, [projectId, "blog_tags"]);
+    const api = buildTaxonomiesUrl();
     const json = await fetchKontent(api);
     if (json.terms.length > 0) {
         var elementAsideBlogTagsHeading = document.createElement('h1');
@@ -216,14 +190,4 @@ function getNoResultsMessage() {
 function getUrlParamater(param) {
     var urlParams = new URLSearchParams(window.location.search);
     return urlParams.has(param) ? urlParams.get(param) : undefined;
-}
-
-
-function formatString(str, args) {
-    if (args.length > 0) {
-        for (var i = 0; i < args.length; i++) {
-            str = str.replace("{" + i + "}", args[i]);
-        }
-    }
-    return str;
 }
