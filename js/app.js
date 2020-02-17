@@ -1,7 +1,8 @@
 import { firstOrDefaultValue, firstOrDefaultContent } from "./parsing.js";
 import { buildBlogItemsUrl, buildTaxonomiesUrl, fetchKontent } from "./kontent.js";
 
-const tag = getUrlParamater("tag");
+const baseUrl = new URL(location.protocol + '//' + location.host + location.pathname);
+const tags = getUrlParamater("tags");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
@@ -26,7 +27,7 @@ function initiateEventListeners() {
 
 async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
-    const api = btnLoadMore.dataset.next_page || buildBlogItemsUrl(tag);
+    const api = btnLoadMore.dataset.next_page || buildBlogItemsUrl(tags);
     const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
@@ -128,6 +129,7 @@ async function loadAsideBlogTags() {
 
 function appendBlogTagToTagCloud(blogTag) {
     var elementBlogTag = document.createElement('a');
+    if (tagIsSelected(blogTag.codename)) { elementBlogTag.classList.add("selected-tag"); }
     elementBlogTag.innerHTML = blogTag.name;
     elementBlogTag.addEventListener('click', function () {
         navigateToBlogs(blogTag.codename);
@@ -142,10 +144,36 @@ function appendBlogTagToTagCloud(blogTag) {
 
 
 function navigateToBlogs(blogTag) {
-    const baseURL = location.href;
-    const url = new URL(location.pathname, baseURL);
-    if (blogTag) { url.searchParams.set("tag", blogTag); }
-    location.href = url.toString();
+    var toggledTags = toggledBlogTags(blogTag);
+    if (toggledTags) baseUrl.searchParams.set("tags", toggledTags);
+    window.location.href = baseUrl.href;
+}
+
+
+function toggledBlogTags(blogTag) {
+    if (tags === undefined) { return blogTag; }
+    var selectedTags = toggleTagSelection(tags, blogTag);
+    return selectedTags;
+}
+
+
+function toggleTagSelection(selectedTags, blogTag) {
+    var arrayTags = selectedTags.split(",");
+    if (arrayTags.includes(blogTag)) {
+        arrayTags = arrayTags.filter(function (value) {
+            return value !== blogTag;
+        });
+    } else {
+        arrayTags.push(blogTag);
+    }
+    return arrayTags.join(",");
+}
+
+
+function tagIsSelected(blogTag) {
+    if (tags === undefined) { return false; }
+    var arrayTags = tags.split(",");
+    return arrayTags.includes(blogTag);
 }
 
 
@@ -165,10 +193,7 @@ function processContentSnippets(blogSummary, data)
                 var objCodeSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
                 if (objCodeSnippet !== null) {
                     var elementCodeSnippet = document.createElement('pre');
-                    if (data[key].elements.language.value[0].codename === "html") {
-                        elementCodeSnippet = document.createElement('xmp');
-                    }
-                    elementCodeSnippet.innerHTML = data[key].elements.code.value;
+                    elementCodeSnippet.textContent = data[key].elements.code.value;
                     objCodeSnippet.parentNode.replaceChild(elementCodeSnippet, objCodeSnippet);
                 }
             }

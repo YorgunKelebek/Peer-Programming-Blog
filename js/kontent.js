@@ -20,7 +20,7 @@ class URLBuilder {
         if (this.includeTotalCount) searchParams.set("includeTotalCount", this.includeTotalCount);
         if (this.limit) searchParams.set("limit", this.limit);
         if (this.orderByElementProp) searchParams.set("order", `elements.${this.orderByElementProp}`);
-        if (this.blogTagsContains) searchParams.set("elements.blog_tags[contains]", this.blogTagsContains);
+        if (this.blogTagsContains) searchParams.set("elements.blog_tags[any]", this.blogTagsContains);
         return working;
     }
 }
@@ -29,11 +29,11 @@ const itemFetchKontentApi = new URLBuilder(apiBlogPost);
 const taxonomiesFetchKontentApi = new URLBuilder(apiTaxonomyGroup);
 
 
-export function buildBlogItemsUrl(tag) {
+export function buildBlogItemsUrl(tags) {
     itemsFetchKontentApi.includeTotalCount = true;
     itemsFetchKontentApi.limit = pageSize;
     itemsFetchKontentApi.orderByElementProp = "post_date[desc]";
-    if (tag) itemsFetchKontentApi.blogTagsContains = tag;
+    if (tags) itemsFetchKontentApi.blogTagsContains = tags;
     return itemsFetchKontentApi.build();
 }
 
