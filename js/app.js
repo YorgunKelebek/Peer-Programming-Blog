@@ -191,9 +191,6 @@ function processContentSnippets(blogSummary, data)
                 var objCodeSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
                 if (objCodeSnippet !== null) {
                     var elementCodeSnippet = document.createElement('pre');
-		    if (data[key].elements.language.value[0].codename === "html") {	
-                        elementCodeSnippet = document.createElement('xmp');	
-                    }
                     elementCodeSnippet.innerHTML = data[key].elements.code.value;
                     objCodeSnippet.parentNode.replaceChild(elementCodeSnippet, objCodeSnippet);
                 }
