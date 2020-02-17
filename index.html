@@ -2,32 +2,39 @@
 <html>
 
 <head>
+
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta content="99b0b3b0-4838-0051-3d57-8af72f55e8a0" name="project-id" />
     <script type="module" src="js/app.js"></script>
     <title>Blog - Peer Programming</title>
-</head>
 
+</head>
 <body>
 
     <main>
 
-        <ol class="blogs">
-        </ol>
+        <ol class="blogs" />
 
     </main>
     <template id="blog-list-item">
+
         <li class="blog">
+
             <span class="author" data-content="author"></span>
             <a class="title" data-content="title"></a>
             <span class="post-date" data-content="postDate"></span>
-            <ul class="tags">
-                <li>Chess</li>
-                <li>Winning</li>
-            </ul>
+            <ul class="tags" data-items="tags" data-template="#blog-list-item-tag" />
+
         </li>
+
     </template>
+    <template id="blog-list-item-tag">
+
+        <li data-content="name"></li>
+
+    </template>
+
 </body>
 
 </html>

@@ -20,7 +20,7 @@ export const modularContentArtist = dataArtist({
 });
 
 export const blogDataArtist = dataArtist({
-    id: ["system", "code_name"],
+    id: ["system", "codename"],
     author: ["elements", "author", "value", 0, findAuthorName],
     title: ["elements", "title", "value"],
     posted: ["elements", "post_date", "value", parseISODate],
