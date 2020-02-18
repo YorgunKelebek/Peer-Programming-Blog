@@ -24,7 +24,6 @@ export async function prepareData({ baseURI, resource }) {
 
     // get blogs
     const blogs = data.items.map(blogDataArtist);
-console.log(blogs);
 
     // get pagination
     const paging = pagingArtist(data);
