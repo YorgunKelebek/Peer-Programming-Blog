@@ -10,7 +10,7 @@ class URLBuilder {
         this.includeTotalCount = true;
         this.limit = null;
         this.orderByElementProp = null;
-        this.blogTagsContains = null;
+        this.selectedTags = null;
         this.baseURL = new URL(baseURL);
     }
 
@@ -20,7 +20,7 @@ class URLBuilder {
         if (this.includeTotalCount) searchParams.set("includeTotalCount", this.includeTotalCount);
         if (this.limit) searchParams.set("limit", this.limit);
         if (this.orderByElementProp) searchParams.set("order", `elements.${this.orderByElementProp}`);
-        if (this.blogTagsContains) searchParams.set("elements.blog_tags[any]", this.blogTagsContains);
+        if (this.selectedTags) searchParams.set("elements.blog_tags[any]", this.selectedTags);
         return working;
     }
 }
@@ -33,7 +33,7 @@ export function buildBlogItemsUrl(tags) {
     itemsFetchKontentApi.includeTotalCount = true;
     itemsFetchKontentApi.limit = pageSize;
     itemsFetchKontentApi.orderByElementProp = "post_date[desc]";
-    if (tags) itemsFetchKontentApi.blogTagsContains = tags;
+    if (tags) itemsFetchKontentApi.selectedTags = tags;
     return itemsFetchKontentApi.build();
 }
 

@@ -1,7 +1,8 @@
 import { firstOrDefaultValue, firstOrDefaultContent } from "./parsing.js";
 import { buildBlogItemsUrl, buildTaxonomiesUrl, fetchKontent } from "./kontent.js";
 
-const baseUrl = new URL(location.protocol + '//' + location.host + location.pathname);
+const baseUrl = new URL(location);
+baseUrl.search = "";
 const tags = getUrlParamater("tags");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
@@ -145,28 +146,28 @@ function appendBlogTagToTagCloud(blogTag) {
 
 function navigateToBlogs(blogTag) {
     var toggledTags = toggledBlogTags(blogTag);
-    if (toggledTags) baseUrl.searchParams.set("tags", toggledTags);
-    window.location.href = baseUrl.href;
+    const newUrl = new URL(baseUrl);
+    if (toggledTags) newUrl.searchParams.set("tags", toggledTags);
+    window.location.href = newUrl.href;
 }
 
 
 function toggledBlogTags(blogTag) {
-    if (tags === undefined) { return blogTag; }
+    if (!tags) { return blogTag; }
     var selectedTags = toggleTagSelection(tags, blogTag);
     return selectedTags;
 }
 
 
 function toggleTagSelection(selectedTags, blogTag) {
-    var arrayTags = selectedTags.split(",");
-    if (arrayTags.includes(blogTag)) {
-        arrayTags = arrayTags.filter(function (value) {
-            return value !== blogTag;
-        });
+    var tagsArray = selectedTags.split(",");
+    let tagsSet = new Set(tagsArray);
+    if (tagsSet.has(blogTag)) {
+        tagsSet.delete(blogTag);
     } else {
-        arrayTags.push(blogTag);
+        tagsSet.add(blogTag);
     }
-    return arrayTags.join(",");
+    return Array.from(tagsSet).join(",");
 }
 
 
