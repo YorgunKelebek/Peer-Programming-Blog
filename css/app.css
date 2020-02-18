@@ -74,6 +74,11 @@ aside h1 {
     margin: 3px;
 }
 
+.aside-blog-tags a.selected-tag {
+    background-color: #76c158;
+    color: #fff;
+}
+
 .aside-blog-tags a:hover {
     background: #808080;
     color: #fff;

@@ -1,7 +1,10 @@
 import { firstOrDefaultValue, firstOrDefaultContent } from "./parsing.js";
 import { buildBlogItemsUrl, buildTaxonomiesUrl, fetchKontent } from "./kontent.js";
 
-const tag = getUrlParamater("tag");
+const baseUrl = new URL(location);
+baseUrl.search = "";
+baseUrl.hash = "";
+const tags = getUrlParamater("tag");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
@@ -26,7 +29,7 @@ function initiateEventListeners() {
 
 async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
-    const api = btnLoadMore.dataset.next_page || buildBlogItemsUrl(tag);
+    const api = btnLoadMore.dataset.next_page || buildBlogItemsUrl(tags);
     const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
@@ -43,7 +46,7 @@ async function loadBlogItems() {
             scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
-        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage()
+        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
         document.querySelector("main").appendChild(errorMessage);
     }
 }
@@ -128,6 +131,7 @@ async function loadAsideBlogTags() {
 
 function appendBlogTagToTagCloud(blogTag) {
     var elementBlogTag = document.createElement('a');
+    if (tagIsSelected(blogTag.codename)) { elementBlogTag.classList.add("selected-tag"); }
     elementBlogTag.innerHTML = blogTag.name;
     elementBlogTag.addEventListener('click', function () {
         navigateToBlogs(blogTag.codename);
@@ -142,10 +146,33 @@ function appendBlogTagToTagCloud(blogTag) {
 
 
 function navigateToBlogs(blogTag) {
-    const baseURL = location.href;
-    const url = new URL(location.pathname, baseURL);
-    if (blogTag) { url.searchParams.set("tag", blogTag); }
-    location.href = url.toString();
+    var toggledTags = toggledBlogTags(blogTag);
+    const newUrl = new URL(baseUrl);
+    if (toggledTags) toggledTags.forEach(tag => newUrl.searchParams.append("tag", tag));
+    window.location.href = newUrl.href;
+}
+
+
+function toggledBlogTags(blogTag) {
+    if (!tags) { return blogTag; }
+    var selectedTags = toggleTagSelection(blogTag);
+    return selectedTags;
+}
+
+
+function toggleTagSelection(blogTag) {
+    if (tags.has(blogTag)) {
+        tags.delete(blogTag);
+    } else {
+        tags.add(blogTag);
+    }
+    return tags;
+}
+
+
+function tagIsSelected(blogTag) {
+    if (!tags) { return false; }
+    return tags.has(blogTag);
 }
 
 
@@ -185,6 +212,6 @@ function getNoResultsMessage() {
 
 
 function getUrlParamater(param) {
-    var urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has(param) ? urlParams.get(param) : undefined;
+    const url = new URL(location.href);
+    return new Set(url.searchParams.getAll(param));
 }
