@@ -20,7 +20,7 @@ class URLBuilder {
         if (this.includeTotalCount) searchParams.set("includeTotalCount", this.includeTotalCount);
         if (this.limit) searchParams.set("limit", this.limit);
         if (this.orderByElementProp) searchParams.set("order", `elements.${this.orderByElementProp}`);
-        if (this.selectedTags) searchParams.set("elements.blog_tags[any]", this.selectedTags);
+        if (this.selectedTags) searchParams.set("elements.blog_tags[any]", Array.from(this.selectedTags).join(","));
         return working;
     }
 }
@@ -33,7 +33,7 @@ export function buildBlogItemsUrl(tags) {
     itemsFetchKontentApi.includeTotalCount = true;
     itemsFetchKontentApi.limit = pageSize;
     itemsFetchKontentApi.orderByElementProp = "post_date[desc]";
-    if (tags) itemsFetchKontentApi.selectedTags = tags;
+    if (tags.size > 0) itemsFetchKontentApi.selectedTags = tags;
     return itemsFetchKontentApi.build();
 }
 

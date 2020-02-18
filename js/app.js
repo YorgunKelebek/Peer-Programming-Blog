@@ -3,7 +3,7 @@ import { buildBlogItemsUrl, buildTaxonomiesUrl, fetchKontent } from "./kontent.j
 
 const baseUrl = new URL(location);
 baseUrl.search = "";
-const tags = getUrlParamater("tags");
+const tags = getUrlParamater("tag");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
@@ -45,7 +45,7 @@ async function loadBlogItems() {
             scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
-        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage()
+        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
         document.querySelector("main").appendChild(errorMessage);
     }
 }
@@ -147,34 +147,31 @@ function appendBlogTagToTagCloud(blogTag) {
 function navigateToBlogs(blogTag) {
     var toggledTags = toggledBlogTags(blogTag);
     const newUrl = new URL(baseUrl);
-    if (toggledTags) newUrl.searchParams.set("tags", toggledTags);
+    if (toggledTags) toggledTags.forEach(tag => newUrl.searchParams.append("tag", tag));
     window.location.href = newUrl.href;
 }
 
 
 function toggledBlogTags(blogTag) {
     if (!tags) { return blogTag; }
-    var selectedTags = toggleTagSelection(tags, blogTag);
+    var selectedTags = toggleTagSelection(blogTag);
     return selectedTags;
 }
 
 
-function toggleTagSelection(selectedTags, blogTag) {
-    var tagsArray = selectedTags.split(",");
-    let tagsSet = new Set(tagsArray);
-    if (tagsSet.has(blogTag)) {
-        tagsSet.delete(blogTag);
+function toggleTagSelection(blogTag) {
+    if (tags.has(blogTag)) {
+        tags.delete(blogTag);
     } else {
-        tagsSet.add(blogTag);
+        tags.add(blogTag);
     }
-    return Array.from(tagsSet).join(",");
+    return tags;
 }
 
 
 function tagIsSelected(blogTag) {
-    if (tags === undefined) { return false; }
-    var arrayTags = tags.split(",");
-    return arrayTags.includes(blogTag);
+    if (!tags) { return false; }
+    return tags.has(blogTag);
 }
 
 
@@ -214,6 +211,6 @@ function getNoResultsMessage() {
 
 
 function getUrlParamater(param) {
-    var urlParams = new URLSearchParams(window.location.search);
-    return urlParams.has(param) ? urlParams.get(param) : undefined;
+    const url = new URL(location.href);
+    return new Set(url.searchParams.getAll(param));
 }
