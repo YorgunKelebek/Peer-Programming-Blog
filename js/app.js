@@ -3,6 +3,7 @@ import { buildBlogItemsUrl, buildTaxonomiesUrl, fetchKontent } from "./kontent.j
 
 const baseUrl = new URL(location);
 baseUrl.search = "";
+baseUrl.hash = "";
 const tags = getUrlParamater("tag");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
