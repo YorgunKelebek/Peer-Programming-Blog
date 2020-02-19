@@ -1,5 +1,31 @@
 ﻿
 
+/* Hero Header Section */
+.hero-section {
+    background: url("../images/header.jpg") 50% no-repeat;
+    background-size: cover;
+    height: 60vh;
+    max-height: 350px;
+    margin-bottom: 30px;
+    text-align: center;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+    .hero-section .hero-section-text {
+        color: #fefefe;
+        text-shadow: 1px 1px 2px #0a0a0a;
+    }
+
+.hero-section-text h2 {
+    font-size: 1.25em;
+}
+/* /Hero Header Section */
+
 
 aside h1 {
     font-size: 1.5em;

@@ -8,7 +8,7 @@ const tags = getUrlParamater("tag");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
-
+let pageFirstLoad = true;
 
 window.addEventListener('DOMContentLoaded', (event) => {
     loadBlogItems();
@@ -29,7 +29,7 @@ function initiateEventListeners() {
 
 async function loadBlogItems() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
-    const api = btnLoadMore.dataset.next_page || buildBlogItemsUrl(tags);
+    const api = pageFirstLoad ? buildBlogItemsUrl(tags) : btnLoadMore.dataset.next_page;
     const json = await fetchKontent(api);
 
     if (json.items.length > 0) {
@@ -43,12 +43,13 @@ async function loadBlogItems() {
                 }
             }
             setNextBatchLoad(json.pagination.next_page);
-            scrollToItem(btnLoadMore.dataset.first_item);
+            if (!pageFirstLoad) scrollToItem(btnLoadMore.dataset.first_item);
         }
     } else {
         const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
         document.querySelector("main").appendChild(errorMessage);
     }
+    pageFirstLoad = false;
 }
 
 
