@@ -6,6 +6,7 @@ baseUrl.search = "";
 baseUrl.hash = "";
 const tags = getUrlParamater("tag");
 const blogSummaryTemplate = document.querySelector("#blog_summary_template");
+const blogImageTemplate = document.querySelector("#blog_image_template");
 const apiErrorMessageTemplate = document.querySelector("#api_error_message");
 const apiNoResultsMessageTemplate = document.querySelector("#api_noresults_message");
 let pageFirstLoad = true;
@@ -74,13 +75,16 @@ function buildBlogSummary(blog, modularContent)
     const title = firstOrDefaultValue(blog, "title") || "unknown";
     blogSummary.querySelector(".summary-title").textContent = title;
 
-    blogSummary.querySelector(".summary-blog-post").dataset.item_id =
+    const blogPost = blogSummary.querySelector(".summary-blog-post");
+    blogPost.dataset.item_id =
         blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
 
     const blogMediaImageURL = firstOrDefaultValue(blog, "blog_media___image", "url");
 	if (blogMediaImageURL)
 	{
-		blogSummary.querySelector(".blog-image").src = blogMediaImageURL;
+        const blogImage = document.importNode(blogImageTemplate.content, true);
+        blogImage.querySelector(".blog-image").src = blogMediaImageURL;
+        blogPost.insertBefore(blogImage, blogPost.childNodes[0]);
     }
 
     const authorContent = firstOrDefaultContent(blog, modularContent, "author");

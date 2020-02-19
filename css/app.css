@@ -47,9 +47,11 @@ aside h1 {
     width: 90%;
     background: #fff;
     padding: 25px 25px 0px 25px;
-    margin-top: -5rem;
     display: inline-block;
     z-index: 2;
+}
+div.blog-image-container + div.summary-blog-section {
+    margin-top: -5rem !important;
 }
 
 .summary-blog-post .meta-data {
