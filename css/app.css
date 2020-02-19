@@ -50,8 +50,8 @@ aside h1 {
     display: inline-block;
     z-index: 2;
 }
-div.blog-image-container + div.summary-blog-section {
-    margin-top: -5rem !important;
+img.blog-image + div.summary-blog-section {
+    margin-top: -5rem;
 }
 
 .summary-blog-post .meta-data {
