@@ -101,11 +101,27 @@ function buildBlogSummary(blog, modularContent)
         }
     }
 
-    const body = firstOrDefaultValue(blog, "body") || "";
+    let body = firstOrDefaultValue(blog, "body") || "";
+    body = convertImagesToHyperlink(body);
 	blogSummary.querySelector(".summary-body").innerHTML = body;
 
     processContentSnippets(blogSummary, modularContent);
 	return blogSummary;
+}
+
+
+function convertImagesToHyperlink(blogBody) {
+    let wrapper = document.createElement("div");
+    wrapper.innerHTML = blogBody;
+    wrapper.querySelectorAll("img").forEach(image => {
+        let elementHyperlink = document.createElement('a');
+        let imageParentNode = image.parentNode;
+        elementHyperlink.appendChild(image.cloneNode());
+        elementHyperlink.href = image.src;
+        elementHyperlink.target = "_blank";
+        imageParentNode.replaceChild(elementHyperlink, image);
+    });
+    return wrapper.innerHTML;
 }
 
 
