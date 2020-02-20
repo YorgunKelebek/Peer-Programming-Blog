@@ -111,11 +111,11 @@ function buildBlogSummary(blog, modularContent)
 
 
 function convertImagesToHyperlink(blogBody) {
-    let wrapper = document.createElement("div");
+    const wrapper = document.createElement("div");
     wrapper.innerHTML = blogBody;
     wrapper.querySelectorAll("img").forEach(image => {
-        let elementHyperlink = document.createElement('a');
-        let imageParentNode = image.parentNode;
+        const imageParentNode = image.parentNode;
+        const elementHyperlink = document.createElement('a');
         elementHyperlink.appendChild(image.cloneNode());
         elementHyperlink.href = image.src;
         elementHyperlink.target = "_blank";
