@@ -14,10 +14,10 @@
     justify-content: center;
 }
 
-    .hero-section .hero-section-text {
-        color: #fefefe;
-        text-shadow: 1px 1px 2px #0a0a0a;
-    }
+.hero-section .hero-section-text {
+    color: #fefefe;
+    text-shadow: 1px 1px 2px #0a0a0a;
+}
 
 .hero-section-text h2 {
     font-size: 1.25em;
@@ -73,6 +73,15 @@ img.blog-image + div.summary-blog-section {
     content: "";
     background: linear-gradient(to top, rgba(255,255,255, 1) 10%, rgba(255,255,255, 0) 80% );
     pointer-events: none; /* so the text is still selectable */
+}
+
+.summary-body figure {
+    transition: transform .2s; /* Animation */
+    margin: 0 auto;
+}
+
+.summary-body figure:hover {
+    transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
 .blog-preview-close:after {
