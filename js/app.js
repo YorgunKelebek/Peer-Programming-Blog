@@ -213,10 +213,10 @@ function processContentSnippets(blogSummary, data)
     }
 }
 function buildContentSnippet(blogSummary, data, key) {
-    let snippetType = snippetTypes[data[key].system.type];
-    let objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
+    const snippetType = snippetTypes[data[key].system.type];
+    const objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
     if (objSnippet !== null) {
-        let elementSnippet = document.createElement(snippetType.tag);
+        const elementSnippet = document.createElement(snippetType.tag);
         if (snippetType.format === "text") elementSnippet.textContent = firstOrDefaultValue(data[key], snippetType.property) || "";
         else elementSnippet.innerHTML = firstOrDefaultValue(data[key], snippetType.property) || "";
         if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
