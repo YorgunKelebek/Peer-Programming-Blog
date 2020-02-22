@@ -87,6 +87,21 @@ img.blog-image + div.summary-blog-section {
 .blog-preview-close:after {
     content: "Close";
 }
+
+aside.aside-note {
+    width: 40%;
+    padding-left: .5rem;
+    margin-left: .5rem;
+    float: right;
+    border-left: 3px solid #76c158;
+    font-style: italic;
+    color: #29627e;
+}
+
+aside.aside-note > p {
+    margin: .125rem;
+}
+
 /* /Blog Post */
 
 

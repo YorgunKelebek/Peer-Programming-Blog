@@ -197,27 +197,30 @@ function tagIsSelected(blogTag) {
 }
 
 
+const snippetTypes = {
+    "media_embed": { "property": "media_item__text.value", "tag": "div", "format": "html", "classname": "" },
+    "code_snippet": { "property": "code", "tag": "pre", "format": "text", "classname": "" },
+    "aside_note": { "property": "note_text", "tag": "aside", "format": "html", "classname": "aside-note" }
+    };
 function processContentSnippets(blogSummary, data)
 {
     for (var key in data) {
         if (data.hasOwnProperty(key)) {
-            if (data[key].system.type === "media_embed") {
-                var objMediaEmbed = blogSummary.querySelector("[data-codename='" + key + "']");
-                if (objMediaEmbed !== null) {
-                    var elementMediaEmbed = document.createElement('div');
-                    elementMediaEmbed.innerHTML = data[key].elements.media_item__text.value;
-                    objMediaEmbed.parentNode.replaceChild(elementMediaEmbed, objMediaEmbed);
-                }
-            }
-            if (data[key].system.type === "code_snippet") {
-                var objCodeSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
-                if (objCodeSnippet !== null) {
-                    var elementCodeSnippet = document.createElement('pre');
-                    elementCodeSnippet.textContent = data[key].elements.code.value;
-                    objCodeSnippet.parentNode.replaceChild(elementCodeSnippet, objCodeSnippet);
-                }
+            if (snippetTypes.hasOwnProperty(data[key].system.type)) {
+                buildContentSnippet(blogSummary, data, key);
             }
         }
+    }
+}
+function buildContentSnippet(blogSummary, data, key) {
+    let snippetType = snippetTypes[data[key].system.type];
+    let objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
+    if (objSnippet !== null) {
+        let elementSnippet = document.createElement(snippetType.tag);
+        if (snippetType.format === "text") elementSnippet.textContent = firstOrDefaultValue(data[key], snippetType.property) || "";
+        else elementSnippet.innerHTML = firstOrDefaultValue(data[key], snippetType.property) || "";
+        if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
+        objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
     }
 }
 
