@@ -206,7 +206,7 @@ function processContentSnippets(blogSummary, data)
 {
     for (var key in data) {
         if (data.hasOwnProperty(key)) {
-            if (snippetTypes.hasOwnProperty(data[key].system.type)) {
+            if (data[key].system.type in snippetTypes) {
                 buildContentSnippet(blogSummary, data, key);
             }
         }
@@ -217,8 +217,9 @@ function buildContentSnippet(blogSummary, data, key) {
     const objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
     if (objSnippet !== null) {
         const elementSnippet = document.createElement(snippetType.tag);
-        if (snippetType.format === "text") elementSnippet.textContent = firstOrDefaultValue(data[key], snippetType.property) || "";
-        else elementSnippet.innerHTML = firstOrDefaultValue(data[key], snippetType.property) || "";
+        const snippetContent = firstOrDefaultValue(data[key], snippetType.property) || "";
+        if (snippetType.format === "text") elementSnippet.textContent = snippetContent;
+        else elementSnippet.innerHTML = snippetContent;
         if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
         objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
     }

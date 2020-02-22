@@ -78,6 +78,7 @@ img.blog-image + div.summary-blog-section {
 .summary-body figure {
     transition: transform .2s; /* Animation */
     margin: 0 auto;
+    margin-bottom: 1rem;
 }
 
 .summary-body figure:hover {
@@ -89,19 +90,26 @@ img.blog-image + div.summary-blog-section {
 }
 
 aside.aside-note {
-    width: 40%;
     padding-left: .5rem;
-    margin-left: .5rem;
+    margin: .5rem;
     float: right;
     border-left: 3px solid #76c158;
     font-style: italic;
     color: #29627e;
+}
+@media only screen and (min-width: 768px) {
+    aside.aside-note {
+        width: 40%;
+    }
 }
 
 aside.aside-note > p {
     margin: .125rem;
 }
 
+aside.aside-note > h1, h2, h3, h4, h5, h6 {
+    font-size: larger;
+}
 /* /Blog Post */
 
 
