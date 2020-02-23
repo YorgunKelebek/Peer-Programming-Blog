@@ -81,8 +81,10 @@ img.blog-image + div.summary-blog-section {
     margin-bottom: 1rem;
 }
 
-.summary-body figure:hover {
-    transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+@media only screen and (min-width: 1600px) {
+    .summary-body:not(.blog-preview) figure:hover {
+        transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    }
 }
 
 .blog-preview-close:after {
@@ -94,8 +96,6 @@ aside.aside-note {
     margin: .5rem;
     float: right;
     border-left: 3px solid #76c158;
-    font-style: italic;
-    color: #29627e;
 }
 @media only screen and (min-width: 768px) {
     aside.aside-note {
