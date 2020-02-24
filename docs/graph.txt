@@ -8,12 +8,23 @@ digraph G {
         node [ fillcolor=green; style=filled; color=chartreuse3 ]
         QueryStringPatcher
         Fetcher
+        DataArtist
+        DOMContentLoaded
+        NodeArtist
     }
 
+
     QueryStringPatcher
+    -> app1
     -> Fetcher
     -> DataArtist
+    -> app2
     -> NodeArtist
-    DOMContentLoaded -> NodeArtist
+
+    DOMContentLoaded
+    -> app2
+
+    app1 [ label="Application logic", shape=box3d; ]
+    app2 [ label="Application logic", shape=box3d; ]
 
 }

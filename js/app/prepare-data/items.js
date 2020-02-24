@@ -1,13 +1,13 @@
-import fetcher from "../lib/fetcher.js";
-import { modularContentArtist, blogDataArtist, pagingArtist, authorIndex } from "./data-artists.js";
+import {
+    modularContentArtist,
+    blogDataArtist,
+    pagingArtist,
+    authorIndex
+} from "../data-artists.js";
 
-// the main function
+export default function(data) {
 
-export async function prepareData({ baseURI, resource }) {
-
-    // fetch the raw data
-    const dataURI = `${baseURI}${resource}`;
-    const data = await fetcher(dataURI, res => res.json());
+    if (!data.items) return null;
 
     // pull out the authors
     Object.entries(data.modular_content)
