@@ -78,14 +78,37 @@ img.blog-image + div.summary-blog-section {
 .summary-body figure {
     transition: transform .2s; /* Animation */
     margin: 0 auto;
+    margin-bottom: 1rem;
 }
 
-.summary-body figure:hover {
-    transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+@media only screen and (min-width: 1600px) {
+    .summary-body:not(.blog-preview) figure:hover {
+        transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    }
 }
 
 .blog-preview-close:after {
     content: "Close";
+}
+
+aside.aside-note {
+    padding-left: .5rem;
+    margin: .5rem;
+    float: right;
+    border-left: 3px solid #76c158;
+}
+@media only screen and (min-width: 768px) {
+    aside.aside-note {
+        width: 40%;
+    }
+}
+
+aside.aside-note > p {
+    margin: .125rem;
+}
+
+aside.aside-note > h1, h2, h3, h4, h5, h6 {
+    font-size: larger;
 }
 /* /Blog Post */
 
