@@ -16,6 +16,4 @@ import NodeArtist from "./lib/node-artist/index.js";
         blogList.appendChild(listItem);
     }
 
-    console.log(blogs, paging);
-
 }());
