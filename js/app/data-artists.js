@@ -1,4 +1,6 @@
 import dataArtist from "../lib/data-artist.js";
+import formatDate from "../lib/date-format.js";
+import { buildBlogLink } from "./route-builder.js";
 
 // some parsing functions
 
@@ -7,8 +9,6 @@ function findAuthorName(key) {
     const author = authorIndex[key];
     return author ? author.name : undefined;
 }
-
-const parseISODate = x => new Date(x);
 
 const calculateCurrentPage = p => p.skip ? (p.skip / p.limit) + 1 : 1;
 
@@ -23,9 +23,10 @@ export const blogDataArtist = dataArtist({
     id: ["system", "codename"],
     author: ["elements", "author", "value", 0, findAuthorName],
     title: ["elements", "title", "value"],
-    posted: ["elements", "post_date", "value", parseISODate],
-    modified: ["system", "last_modified", parseISODate],
-    tags: ["elements", "blog_tags", "value"]
+    posted: ["elements", "post_date", "value", formatDate],
+    modified: ["system", "last_modified", formatDate],
+    tags: ["elements", "blog_tags", "value"],
+    href: ["system", buildBlogLink ]
 });
 
 export const pagingArtist = dataArtist({

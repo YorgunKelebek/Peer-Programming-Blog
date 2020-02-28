@@ -1,7 +1,7 @@
 import { pageOptions } from "./app/page-options.js";
 import { prepareData } from "./app/prepare-data.js";
 import { DOMContentLoaded } from "./lib/DOM.js";
-import NodeArtist from "./lib/node-artist.js";
+import NodeArtist from "./lib/node-artist/index.js";
 
 (async function main() {
 
