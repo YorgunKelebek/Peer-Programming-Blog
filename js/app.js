@@ -5,9 +5,8 @@ import renderModel from "./app/render-model/index.js";
 
 (async function main() {
 
-    const preparingData = prepareData(pageOptions);
+    const viewModel = await prepareData(pageOptions);
     await DOMContentLoaded();
-    const viewModel = await preparingData;
     renderModel(viewModel);
 
 }());
