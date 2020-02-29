@@ -198,9 +198,9 @@ function tagIsSelected(blogTag) {
 
 
 const snippetTypes = {
-    "media_embed": { "property": "media_item__text.value", "tag": "div", "format": "html", "classname": "" },
-    "code_snippet": { "property": "code", "tag": "pre", "format": "text", "classname": "" },
-    "aside_note": { "property": "note_text", "tag": "aside", "format": "html", "classname": "aside-note" }
+    "media_embed": { "property": "media_item__text.value", "tag": "div", "format": "html" },
+    "code_snippet": { "property": "code", "tag": "pre", "format": "text" },
+    "aside_note": { "property": "note_text", "tag": "aside", "format": "html" }
     };
 function processContentSnippets(blogSummary, data)
 {
@@ -213,14 +213,18 @@ function processContentSnippets(blogSummary, data)
     }
 }
 function buildContentSnippet(blogSummary, data, key) {
-    const snippetType = snippetTypes[data[key].system.type];
+    const typeCode = data[key].system.type;
+    const snippetType = snippetTypes[typeCode];
     const objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
     if (objSnippet !== null) {
         const elementSnippet = document.createElement(snippetType.tag);
         const snippetContent = firstOrDefaultValue(data[key], snippetType.property) || "";
         if (snippetType.format === "text") elementSnippet.textContent = snippetContent;
         else elementSnippet.innerHTML = snippetContent;
-        if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
+        if (typeCode === "aside_note") {
+            const asideStyle = firstOrDefaultValue(data[key], "note_style");
+            if (asideStyle) elementSnippet.classList.add("aside-" + asideStyle.codename);
+        }
         objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
     }
 }
