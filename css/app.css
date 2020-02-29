@@ -31,6 +31,9 @@ aside h1 {
     margin-bottom: 1rem;
 }
 
+aside {
+    margin: 1.5em 0;
+}
 
 /* Blog Post */
 .summary-blog-post {
@@ -91,25 +94,36 @@ img.blog-image + div.summary-blog-section {
     content: "Close";
 }
 
-aside.aside-note {
+
+/* ASIDE */
+aside.aside-side_note {
     padding-left: .5rem;
     margin: .5rem;
     float: right;
     border-left: 3px solid #76c158;
 }
 @media only screen and (min-width: 768px) {
-    aside.aside-note {
+    aside.aside-side_note {
         width: 40%;
     }
 }
 
-aside.aside-note > p {
+aside.aside-side_note > p {
     margin: .125rem;
 }
 
-aside.aside-note > h1, h2, h3, h4, h5, h6 {
+aside.aside-side_note > h1, h2, h3, h4, h5, h6 {
     font-size: larger;
 }
+
+aside.aside-block {
+    border: 1px solid #e6e6e6;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 10px;
+}
+/* /ASIDE */
+
+
 /* /Blog Post */
 
 
