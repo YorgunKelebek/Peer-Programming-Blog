@@ -24,9 +24,11 @@ export const blogDataArtist = dataArtist({
     author: ["elements", "author", "value", 0, findAuthorName],
     title: ["elements", "title", "value"],
     posted: ["elements", "post_date", "value", formatDate],
+    "posted-datetime": ["elements", "post_date", "value"],
     modified: ["system", "last_modified", formatDate],
     tags: ["elements", "blog_tags", "value"],
-    href: ["system", buildBlogLink ]
+    href: ["system", buildBlogLink ],
+    body: ["elements", "body", "value"]
 });
 
 export const pagingArtist = dataArtist({
