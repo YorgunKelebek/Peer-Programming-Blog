@@ -198,9 +198,10 @@ function tagIsSelected(blogTag) {
 
 
 const snippetTypes = {
-    "media_embed": { "property": "media_item__text.value", "tag": "div", "format": "html" },
-    "code_snippet": { "property": "code", "tag": "pre", "format": "text" },
-    "aside_note": { "property": "note_text", "tag": "aside", "format": "html" }
+    "media_embed": { "property": "media_item__text.value", "tag": "div", "format": "html", "classname": "" },
+    "code_snippet": { "property": "code", "tag": "pre", "format": "text", "classname": "" },
+    "aside_note": { "property": "note_text", "tag": "aside", "format": "html", "classname": "" },
+    "quotation": { "property": "quote", "tag": "aside", "format": "html", "classname": "quotation" }
     };
 function processContentSnippets(blogSummary, data)
 {
@@ -221,9 +222,19 @@ function buildContentSnippet(blogSummary, data, key) {
         const snippetContent = firstOrDefaultValue(data[key], snippetType.property) || "";
         if (snippetType.format === "text") elementSnippet.textContent = snippetContent;
         else elementSnippet.innerHTML = snippetContent;
+        if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
         if (typeCode === "aside_note") {
             const asideStyle = firstOrDefaultValue(data[key], "note_style");
             if (asideStyle) elementSnippet.classList.add("aside-" + asideStyle.codename);
+        }
+        else if (typeCode === "quotation") {
+            const quoteReference = firstOrDefaultValue(data[key], "reference");
+            if (quoteReference) {
+                var elementReference = document.createElement('div');
+                elementReference.innerHTML = quoteReference;
+                elementReference.classList.add("quote-reference");
+                elementSnippet.appendChild(elementReference);
+            }
         }
         objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
     }
