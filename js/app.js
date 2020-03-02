@@ -201,43 +201,64 @@ const snippetTypes = {
     "media_embed": { "property": "media_item__text.value", "tag": "div", "format": "html", "classname": "" },
     "code_snippet": { "property": "code", "tag": "pre", "format": "text", "classname": "" },
     "aside_note": { "property": "note_text", "tag": "aside", "format": "html", "classname": "" },
-    "quotation": { "property": "quote", "tag": "aside", "format": "html", "classname": "quotation" }
+    "quotation": { "property": "quote", "tag": "blockquote", "format": "html", "classname": "quotation" }
     };
+var elementSnippet;
+var objSnippet;
 function processContentSnippets(blogSummary, data)
 {
     for (var key in data) {
         if (data.hasOwnProperty(key)) {
             if (data[key].system.type in snippetTypes) {
-                buildContentSnippet(blogSummary, data, key);
+                parseContentSnippet(blogSummary, data, key);
             }
         }
     }
 }
-function buildContentSnippet(blogSummary, data, key) {
+function parseContentSnippet(blogSummary, data, key) {
     const typeCode = data[key].system.type;
     const snippetType = snippetTypes[typeCode];
-    const objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
+    objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
     if (objSnippet !== null) {
-        const elementSnippet = document.createElement(snippetType.tag);
+        elementSnippet = document.createElement(snippetType.tag);
+        if (!elementSnippet) return;
         const snippetContent = firstOrDefaultValue(data[key], snippetType.property) || "";
-        if (snippetType.format === "text") elementSnippet.textContent = snippetContent;
-        else elementSnippet.innerHTML = snippetContent;
-        if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
-        if (typeCode === "aside_note") {
-            const asideStyle = firstOrDefaultValue(data[key], "note_style");
-            if (asideStyle) elementSnippet.classList.add("aside-" + asideStyle.codename);
-        }
-        else if (typeCode === "quotation") {
-            const quoteReference = firstOrDefaultValue(data[key], "reference");
-            if (quoteReference) {
-                var elementReference = document.createElement('div');
-                elementReference.innerHTML = quoteReference;
-                elementReference.classList.add("quote-reference");
-                elementSnippet.appendChild(elementReference);
-            }
-        }
-        objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
+        setElementContent(snippetType, snippetContent);
+        setElementClass(snippetType);
+        setElementOptions(data, key);
+        loadElementSnippet();
     }
+}
+function setElementContent(snippetType, snippetContent) {
+    if (snippetType.format === "text") elementSnippet.textContent = snippetContent;
+    else elementSnippet.innerHTML = snippetContent;
+}
+function setElementClass(snippetType) {
+    if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
+}
+function setElementOptions(data, key) {
+    tryProcessAsideNote(data, key);
+    tryProcessQuotation(data, key);
+}
+function tryProcessAsideNote(data, key) {
+    try {
+        const asideStyle = firstOrDefaultValue(data[key], "note_style");
+        if (asideStyle) elementSnippet.classList.add("aside-" + asideStyle.codename);
+    } catch { /* no need */ }
+}
+function tryProcessQuotation(data, key) {
+    try {
+        const quoteReference = firstOrDefaultValue(data[key], "reference");
+        if (quoteReference) {
+            var elementReference = document.createElement('footer');
+            elementReference.innerHTML = quoteReference;
+            elementReference.classList.add("quote-reference");
+            elementSnippet.appendChild(elementReference);
+        }
+    } catch { /* no need */ }
+}
+function loadElementSnippet() {
+    objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
 }
 
 
