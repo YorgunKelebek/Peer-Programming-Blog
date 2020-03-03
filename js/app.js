@@ -203,8 +203,6 @@ const snippetTypes = {
     "aside_note": { "property": "note_text", "tag": "aside", "format": "html", "classname": "" },
     "quotation": { "property": "quote", "tag": "blockquote", "format": "html", "classname": "quotation" }
     };
-var elementSnippet;
-var objSnippet;
 function processContentSnippets(blogSummary, data)
 {
     for (var key in data) {
@@ -218,46 +216,42 @@ function processContentSnippets(blogSummary, data)
 function parseContentSnippet(blogSummary, data, key) {
     const typeCode = data[key].system.type;
     const snippetType = snippetTypes[typeCode];
-    objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
+    const objSnippet = blogSummary.querySelector("[data-codename='" + key + "']");
     if (objSnippet !== null) {
-        elementSnippet = document.createElement(snippetType.tag);
+        const elementSnippet = document.createElement(snippetType.tag);
         if (!elementSnippet) return;
         const snippetContent = firstOrDefaultValue(data[key], snippetType.property) || "";
-        setElementContent(snippetType, snippetContent);
-        setElementClass(snippetType);
-        setElementOptions(data, key);
-        loadElementSnippet();
+        setElementContent(elementSnippet, snippetType, snippetContent);
+        setElementClass(elementSnippet, snippetType);
+        setElementOptions(elementSnippet, data, key);
+        loadElementSnippet(elementSnippet, objSnippet);
     }
 }
-function setElementContent(snippetType, snippetContent) {
+function setElementContent(elementSnippet, snippetType, snippetContent) {
     if (snippetType.format === "text") elementSnippet.textContent = snippetContent;
     else elementSnippet.innerHTML = snippetContent;
 }
-function setElementClass(snippetType) {
+function setElementClass(elementSnippet, snippetType) {
     if (snippetType.classname) elementSnippet.classList.add(snippetType.classname);
 }
-function setElementOptions(data, key) {
-    tryProcessAsideNote(data, key);
-    tryProcessQuotation(data, key);
+function setElementOptions(elementSnippet, data, key) {
+    tryProcessAsideNote(elementSnippet, data, key);
+    tryProcessQuotation(elementSnippet, data, key);
 }
-function tryProcessAsideNote(data, key) {
-    try {
-        const asideStyle = firstOrDefaultValue(data[key], "note_style");
-        if (asideStyle) elementSnippet.classList.add("aside-" + asideStyle.codename);
-    } catch { /* no need */ }
+function tryProcessAsideNote(elementSnippet, data, key) {
+    const asideStyle = firstOrDefaultValue(data[key], "note_style");
+    if (asideStyle) elementSnippet.classList.add("aside-" + asideStyle.codename);
 }
-function tryProcessQuotation(data, key) {
-    try {
-        const quoteReference = firstOrDefaultValue(data[key], "reference");
-        if (quoteReference) {
-            var elementReference = document.createElement('footer');
-            elementReference.innerHTML = quoteReference;
-            elementReference.classList.add("quote-reference");
-            elementSnippet.appendChild(elementReference);
-        }
-    } catch { /* no need */ }
+function tryProcessQuotation(elementSnippet, data, key) {
+    const quoteReference = firstOrDefaultValue(data[key], "reference");
+    if (quoteReference) {
+        var elementReference = document.createElement('footer');
+        elementReference.innerHTML = quoteReference;
+        elementReference.classList.add("quote-reference");
+        elementSnippet.appendChild(elementReference);
+    }
 }
-function loadElementSnippet() {
+function loadElementSnippet(elementSnippet, objSnippet) {
     objSnippet.parentNode.replaceChild(elementSnippet, objSnippet);
 }
 
