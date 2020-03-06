@@ -45,6 +45,11 @@ aside {
     color: #76c158;
 }
 
+.summary-blog-post .table-wrapper {
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
 .summary-blog-post .summary-blog-section {
     margin: auto;
     width: 90%;

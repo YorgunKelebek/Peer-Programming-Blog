@@ -33,27 +33,32 @@ async function loadBlogItems() {
     const api = pageFirstLoad ? buildBlogItemsUrl(tags) : btnLoadMore.dataset.next_page;
     const json = await fetchKontent(api);
 
-    if (json.items.length > 0) {
-        if (json.pagination.count > 0) {
-            btnLoadMore.dataset.first_item = json.items[0].system.id;
-            var blogSummary = "";
-            for (var i = 0; i < json.pagination.count; i++) {
-                if (json.items[i].system.type === "blog_post") {
-                    blogSummary = buildBlogSummary(json.items[i], json.modular_content);
-                    document.querySelector("main").appendChild(blogSummary);
-                }
-            }
-            setNextBatchLoad(json.pagination.next_page);
-            if (!pageFirstLoad) scrollToItem(btnLoadMore.dataset.first_item);
-        }
-    } else {
+    if (json.items.length === 0) {
         const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
         document.querySelector("main").appendChild(errorMessage);
+        return;
     }
+
+    processBlogItems(json);
+    setNextBatchLoading(json, btnLoadMore);
     pageFirstLoad = false;
 }
-
-
+function processBlogItems(data) {
+    var blogSummary = "";
+    for (var i = 0; i < data.pagination.count; i++) {
+        if (data.items[i].system.type === "blog_post") {
+            blogSummary = buildBlogSummary(data.items[i], data.modular_content);
+            document.querySelector("main").appendChild(blogSummary);
+        }
+    }
+}
+function setNextBatchLoading(data, btnLoadMore) {
+    if (data.pagination.count > 0) {
+        btnLoadMore.dataset.first_item = data.items[0].system.id;
+        setNextBatchLoad(data.pagination.next_page);
+    }
+    if (!pageFirstLoad) scrollToItem(btnLoadMore.dataset.first_item);
+}
 function setNextBatchLoad(nextBatchUrl) {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
     if (nextBatchUrl !== "") {
@@ -70,56 +75,66 @@ function scrollToItem(itemId) {
 
 function buildBlogSummary(blog, modularContent)
 {
-    const blogSummary = document.importNode(blogSummaryTemplate.content, true);
-
     const title = firstOrDefaultValue(blog, "title") || "unknown";
+    let blogSummary = document.importNode(blogSummaryTemplate.content, true);
     blogSummary.querySelector(".summary-title").textContent = title;
 
-    const blogPost = blogSummary.querySelector(".summary-blog-post");
+    let blogPost = blogSummary.querySelector(".summary-blog-post");
     blogPost.dataset.item_id =
         blogSummary.querySelector(".blog-preview-toggle").dataset.item_id = blog.system.id;
-
-    const blogMediaImageURL = firstOrDefaultValue(blog, "blog_media___image", "url");
-	if (blogMediaImageURL)
-	{
-        const blogImage = document.importNode(blogImageTemplate.content, true);
-        blogImage.querySelector(".blog-image").src = blogMediaImageURL;
-        blogPost.insertBefore(blogImage, blogPost.childNodes[0]);
-    }
+    blogPost = insertBlogImage(blog, blogPost);
 
     const authorContent = firstOrDefaultContent(blog, modularContent, "author");
     const authorName = firstOrDefaultValue(authorContent, "full_name") || "(none)";
     blogSummary.querySelector(".summary-author").textContent = authorName;
-
-    const postDate = firstOrDefaultValue(blog, "post_date");
-    if(postDate) {
-        try {
-            const blogDate = new Date(postDate);
-            blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
-        } catch(e) {
-            console.warn("Blog post date couldn't be parsed for " + JSON.stringify(blog));
-        }
-    }
+    blogSummary = insertBlogDate(blog, blogSummary);
 
     let body = firstOrDefaultValue(blog, "body") || "";
     body = convertImagesToHyperlink(body);
+    body = wrapTablesForOverflow(body);
 	blogSummary.querySelector(".summary-body").innerHTML = body;
 
     processContentSnippets(blogSummary, modularContent);
 	return blogSummary;
 }
-
-
+function insertBlogImage(blog, blogPost) {
+    const blogMediaImageURL = firstOrDefaultValue(blog, "blog_media___image", "url");
+    if (blogMediaImageURL) {
+        const blogImage = document.importNode(blogImageTemplate.content, true);
+        blogImage.querySelector(".blog-image").src = blogMediaImageURL;
+        blogPost.insertBefore(blogImage, blogPost.childNodes[0]);
+    }
+    return blogPost;
+}
+function insertBlogDate(blog, blogSummary) {
+    const postDate = firstOrDefaultValue(blog, "post_date");
+    if (postDate) {
+        const blogDate = new Date(postDate);
+        blogSummary.querySelector(".summary-date").textContent = blogDate.toDateString();
+    }
+    return blogSummary;
+}
 function convertImagesToHyperlink(blogBody) {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = blogBody;
     wrapper.querySelectorAll("img").forEach(image => {
         const imageParentNode = image.parentNode;
-        const elementHyperlink = document.createElement('a');
+        const elementHyperlink = document.createElement("a");
         elementHyperlink.appendChild(image.cloneNode());
         elementHyperlink.href = image.src;
         elementHyperlink.target = "_blank";
         imageParentNode.replaceChild(elementHyperlink, image);
+    });
+    return wrapper.innerHTML;
+}
+function wrapTablesForOverflow(blogBody) {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = blogBody;
+    wrapper.querySelectorAll("table").forEach(table => {
+        const elementContainer = document.createElement("div");
+        elementContainer.appendChild(table.cloneNode(true));
+        elementContainer.classList.add("table-wrapper");
+        wrapper.replaceChild(elementContainer, table);
     });
     return wrapper.innerHTML;
 }
