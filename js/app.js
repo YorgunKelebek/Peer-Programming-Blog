@@ -130,7 +130,7 @@ function convertImagesToHyperlink(blogBody) {
 function wrapTablesForOverflow(blogBody) {
     const wrapper = document.createElement("div");
     wrapper.innerHTML = blogBody;
-    wrapper.querySelectorAll("table").forEach(table => {
+    wrapper.querySelectorAll(":scope > table").forEach(table => {
         const elementContainer = document.createElement("div");
         elementContainer.appendChild(table.cloneNode(true));
         elementContainer.classList.add("table-wrapper");
