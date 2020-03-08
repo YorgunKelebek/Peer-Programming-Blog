@@ -1,5 +1,9 @@
 import { buildTaxonomiesUrl, fetchKontent } from "./kontent-fetching.js";
-import { tags, baseUrl } from "./app.js";
+
+const baseUrl = new URL(location);
+baseUrl.search = "";
+baseUrl.hash = "";
+export const tags = getUrlParamater("tag");
 
 
 export async function loadAsideBlogTags() {
@@ -52,4 +56,10 @@ function toggleTagSelection(blogTag) {
 function tagIsSelected(blogTag) {
     if (!tags) { return false; }
     return tags.has(blogTag);
+}
+
+
+function getUrlParamater(param) {
+    const url = new URL(location.href);
+    return new Set(url.searchParams.getAll(param));
 }

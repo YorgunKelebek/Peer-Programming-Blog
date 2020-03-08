@@ -1,6 +1,6 @@
 import { buildBlogItemsUrl, fetchKontent } from "./kontent-fetching.js";
 import { buildBlogSummary } from "./blog-item.js";
-import { tags } from "./app.js";
+import { tags } from "./blog-tags.js";
 
 let pageFirstLoad = true;
 

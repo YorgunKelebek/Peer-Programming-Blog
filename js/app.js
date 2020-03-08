@@ -1,11 +1,6 @@
 import { loadBlogItems } from "./blog-listing.js";
 import { loadAsideBlogTags } from "./blog-tags.js";
 
-export const baseUrl = new URL(location);
-baseUrl.search = "";
-baseUrl.hash = "";
-export const tags = getUrlParamater("tag");
-
 
 window.addEventListener('DOMContentLoaded', (event) => {
     loadBlogItems();
@@ -32,10 +27,4 @@ function toggleBlogPreview(el)
     itemSummary.classList.toggle("blog-preview");
     el.innerHTML = itemSummary.classList.contains("blog-preview") ? "Read more" : "Read less";
     scrollToItem(itemId);
-}
-
-
-function getUrlParamater(param) {
-    const url = new URL(location.href);
-    return new Set(url.searchParams.getAll(param));
 }
