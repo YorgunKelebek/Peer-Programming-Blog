@@ -17,10 +17,8 @@ async function loadBlogItem(blogCodeName) {
     if (!json.item) {
         const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
         document.querySelector("main").appendChild(errorMessage);
-        return;
     }
-
-    processBlogItem(json);
+    else processBlogItem(json);
 }
 function processBlogItem(data) {
     var blogSummary = "";
@@ -46,11 +44,11 @@ async function loadBlogListing() {
     initiateEventListeners();
 }
 function processBlogItems(data) {
-    var blogSummary = "";
+    var blogPost = "";
     for (var i = 0; i < data.pagination.count; i++) {
         if (data.items[i].system.type === "blog_post") {
-            blogSummary = buildBlogItem(data.items[i], data.modular_content, data.items[i].elements.body.links, true);
-            document.querySelector("main").appendChild(blogSummary);
+            blogPost = buildBlogItem(data.items[i], data.modular_content, data.items[i].elements.body.links, true);
+            document.querySelector("main").appendChild(blogPost);
         }
     }
 }
@@ -92,7 +90,7 @@ function initiateEventListeners() {
             toggleBlogPreview(e.target);
         }
     });
-    document.querySelector("#loadMoreBlogItems").addEventListener("click", loadBlogItems);
+    document.querySelector("#loadMoreBlogItems").addEventListener("click", loadBlogListing);
 }
 
 
