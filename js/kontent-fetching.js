@@ -3,6 +3,9 @@ const apiBlogItems = `https://deliver.kontent.ai/${projectId}/items`;
 const apiBlogPost = `https://deliver.kontent.ai/${projectId}/items/`;
 const apiTaxonomyGroup = `https://deliver.kontent.ai/${projectId}/taxonomies/`;
 const pageSize = 10;
+export const baseUrl = new URL(location);
+baseUrl.search = "";
+baseUrl.hash = "";
 
 class URLBuilder {
     constructor(baseURL) {
@@ -25,7 +28,6 @@ class URLBuilder {
     }
 }
 const itemsFetchKontentApi = new URLBuilder(apiBlogItems);
-const itemFetchKontentApi = new URLBuilder(apiBlogPost);
 const taxonomiesFetchKontentApi = new URLBuilder(apiTaxonomyGroup);
 
 
@@ -39,8 +41,7 @@ export function buildBlogItemsUrl(tags) {
 
 
 export function buildBlogItemUrl(itemCodeName) {
-    itemFetchKontentApi.contentCodeName = itemCodeName;
-    return itemFetchKontentApi.build();
+    return apiBlogPost + itemCodeName;
 }
 
 
