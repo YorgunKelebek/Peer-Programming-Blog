@@ -1,12 +1,14 @@
 import processAttrAttributes from "./attr-processor.js";
 import processContentAttributes from "./content-processor.js";
 import processItemsAttributes from "./items-processor.js";
+import processRichTextAttributes from "./rich-text-processor.js";
 
 function createElement(template, data) {
 
     const node = template.content.cloneNode(true);
     processContentAttributes(node, data);
     processAttrAttributes(node, data);
+    processRichTextAttributes(node, data);
     processItemsAttributes(node, data);
     return node;
 }
