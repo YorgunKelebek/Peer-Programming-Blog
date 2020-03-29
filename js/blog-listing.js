@@ -1,11 +1,35 @@
-import { buildBlogItemsUrl, fetchKontent } from "./kontent-fetching.js";
-import { buildBlogSummary } from "./blog-item.js";
+import { buildBlogItemUrl, buildBlogItemsUrl, fetchKontent } from "./kontent-fetching.js";
+import { buildBlogItem } from "./blog-item.js";
 import { tags } from "./blog-tags.js";
 
 let pageFirstLoad = true;
 
 
-export async function loadBlogItems() {
+export async function loadBlogItems(blogCodename) {
+    if (blogCodename) loadBlogItem(blogCodename);
+    else loadBlogListing();
+}
+
+async function loadBlogItem(blogCodeName) {
+    const api = buildBlogItemUrl(blogCodeName);
+    const json = await fetchKontent(api);
+
+    if (!json.item) {
+        const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
+        document.querySelector("main").appendChild(errorMessage);
+        return;
+    }
+
+    processBlogItem(json);
+}
+function processBlogItem(data) {
+    var blogSummary = "";
+    blogSummary = buildBlogItem(data.item, data.modular_content, data.item.elements.body.links);
+    document.querySelector("main").appendChild(blogSummary);
+}
+
+
+async function loadBlogListing() {
     var btnLoadMore = document.getElementById("loadMoreBlogItems");
     const api = pageFirstLoad ? buildBlogItemsUrl(tags) : btnLoadMore.dataset.next_page;
     const json = await fetchKontent(api);
@@ -19,12 +43,13 @@ export async function loadBlogItems() {
     processBlogItems(json);
     setNextBatchLoading(json, btnLoadMore);
     pageFirstLoad = false;
+    initiateEventListeners();
 }
 function processBlogItems(data) {
     var blogSummary = "";
     for (var i = 0; i < data.pagination.count; i++) {
         if (data.items[i].system.type === "blog_post") {
-            blogSummary = buildBlogSummary(data.items[i], data.modular_content);
+            blogSummary = buildBlogItem(data.items[i], data.modular_content, data.items[i].elements.body.links, true);
             document.querySelector("main").appendChild(blogSummary);
         }
     }
@@ -58,4 +83,24 @@ function getApiErrorMessage() {
 }
 function getNoResultsMessage() {
     return document.importNode(apiNoResultsMessageTemplate.content, true);
+}
+
+
+function initiateEventListeners() {
+    document.querySelector("main").addEventListener("click", function (e) {
+        if (e.target.classList.contains("blog-preview-toggle")) {
+            toggleBlogPreview(e.target);
+        }
+    });
+    document.querySelector("#loadMoreBlogItems").addEventListener("click", loadBlogItems);
+}
+
+
+function toggleBlogPreview(el) {
+    const itemId = el.dataset.item_id;
+    var itemContainer = document.querySelector('div[data-item_id="' + itemId + '"]');
+    var itemSummary = itemContainer.querySelector(".blog-body");
+    itemSummary.classList.toggle("blog-preview");
+    el.innerHTML = itemSummary.classList.contains("blog-preview") ? "Read more" : "Read less";
+    scrollToItem(itemId);
 }

@@ -1,8 +1,5 @@
-import { buildTaxonomiesUrl, fetchKontent } from "./kontent-fetching.js";
+import { buildTaxonomiesUrl, fetchKontent, baseUrl } from "./kontent-fetching.js";
 
-const baseUrl = new URL(location);
-baseUrl.search = "";
-baseUrl.hash = "";
 export const tags = getUrlParamater("tag");
 
 
