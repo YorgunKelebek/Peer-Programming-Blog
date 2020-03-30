@@ -1,7 +1,7 @@
 import { blogDataArtist, pagingArtist } from "../data-artists.js";
 import { populateAuthorIndexFromData } from "./authors.js";
 
-export default function(data) {
+export default function prepareItemsData(data) {
 
     if (!data.items) return null;
 

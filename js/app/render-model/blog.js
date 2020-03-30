@@ -7,6 +7,4 @@ export default function({ blog }) {
     const rendered = blogArtist(blog);
     document.body.appendChild(rendered);
 
-    console.log(blog);
-
 }

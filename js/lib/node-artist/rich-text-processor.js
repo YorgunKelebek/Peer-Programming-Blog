@@ -7,7 +7,7 @@ function mapContent(data, element, expression) {
 
 }
 
-export default function(node, data) {
+export default function processRichText(node, data) {
 
     const richTextElements = node.querySelectorAll("[data-rich-text]");
     for(let i = 0; i < richTextElements.length; i++) {

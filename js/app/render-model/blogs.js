@@ -1,11 +1,15 @@
 import NodeArtist from "../../lib/node-artist/index.js";
 
-export default function(viewModel) {
+export default function renderBlogs({ blogs, paging }) {
 
-    if (!viewModel.blogs) return;
+    if (!blogs) return;
 
-    const blogListArtist = NodeArtist("#blog-list");
-    const blogs = blogListArtist(viewModel);
-    document.body.appendChild(blogs);
+    const blogListItemArtist = NodeArtist("#blog-list-item");
+
+    const blogList = document.querySelector("ol.blogs");
+    for(let blog of blogs) {
+        const listItem = blogListItemArtist(blog);
+        blogList.appendChild(listItem);
+    }
 
 }

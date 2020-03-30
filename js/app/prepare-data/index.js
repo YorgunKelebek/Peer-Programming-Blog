@@ -2,7 +2,7 @@ import fetcher from "../../lib/fetcher.js";
 import prepareItemsData from "./items.js";
 import prepareItemData from "./item.js";
 
-export default async function({ baseURI, resource }) {
+export default async function prepareData({ baseURI, resource }) {
 
     // fetch the raw data
     const dataURI = `${baseURI}${resource}`;

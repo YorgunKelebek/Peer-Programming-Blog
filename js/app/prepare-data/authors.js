@@ -3,28 +3,22 @@ import {
     authorIndex
 } from "../data-artists.js";
 
-const defaultValueSelector = x => x;
-function buildHashReducer(keySelector, valueSelector = defaultValueSelector) {
-    return (hash, x) => ({
-        ...hash,
-        [keySelector(x)]: valueSelector(x)
-    });
+function prepareData([ contentKey, rawData ]) {
+    return {
+        key: contentKey,
+        value: modularContentArtist(rawData)
+    };
 }
-
-const keyValueObjectToHash = buildHashReducer(x => x.key, x => x.value);
 
 export function populateAuthorIndexFromData(data) {
 
-    // get modular content
-    const modularContent = Object.entries(data.modular_content).map(([key, value]) => ({
-        key,
-        value: modularContentArtist(value)
-    }));
+    const modularContent = Object.entries(data.modular_content).map(prepareData);
 
-    const index = modularContent
-        .filter(x => x.value.contentType === "author")
-        .reduce(keyValueObjectToHash, {});
+    for(const entry of modularContent) {
 
-    Object.assign(authorIndex, index);
+        if(entry.value.contentType === "author")
+            authorIndex[entry.key] = entry.value;
+
+    }
 
 }

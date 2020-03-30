@@ -29,17 +29,19 @@ function pathExtractItem(data, schemaItem) {
     }
 }
 
-function pathExtract(data, schema) {
-    return Object.entries(schema)
+const patchObject = (originalObject, key, value) =>
+    Object.assign(originalObject, {
+        [key]: value
+    });
+
+const pathExtract = (data, schema) =>
+    Object.entries(schema)
         .map(schemaItem => pathExtractItem(data, schemaItem))
-        .reduce((result, item) => ({
-            ...result,
-            [item.key]: item.value
-        }), {});
-}
+        .reduce((result, item) => patchObject(result, item.key, item.value), {});
 
 export default function dataArtist(schema) {
-    return function(data) {
-        return pathExtract(data, schema);
-    }
+
+    // our data artist is a function which accepts data and returns the desired model
+    return data => pathExtract(data, schema);
+
 }
