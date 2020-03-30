@@ -43,6 +43,13 @@ aside {
 
 .blog-post a {
     color: #76c158;
+    word-break: break-word;
+}
+@media only screen and (min-width: 768px) {
+    .blog-post a {
+        color: #76c158;
+        word-break: inherit;
+    }
 }
 
 .blog-post .table-wrapper {
