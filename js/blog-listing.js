@@ -1,28 +1,43 @@
 import { buildBlogItemUrl, buildBlogItemsUrl, fetchKontent } from "./kontent-fetching.js";
 import { buildBlogItem } from "./blog-item.js";
 import { tags } from "./blog-tags.js";
+import { getUrlParamater } from "./app.js";
 
 let pageFirstLoad = true;
 
 
-export async function loadBlogItems(blogCodename) {
-    if (blogCodename) loadBlogItem(blogCodename);
+export async function loadBlogItems(itemUrlSlug) {
+    if (itemUrlSlug) loadBlogItem(itemUrlSlug);
     else loadBlogListing();
 }
 
-async function loadBlogItem(blogCodeName) {
-    const api = buildBlogItemUrl(blogCodeName);
-    const json = await fetchKontent(api);
+async function loadBlogItem(itemUrlSlug) {
+    let preview = false;
+    let token = "";
+    if (itemUrlSlug) {
+        if (getUrlParamater("mode").has("preview")) {
+            token = prompt("Please enter the preview token to preview");
+            if (token !== "") { preview = true; }
+        }
+    }
 
-    if (!json.item) {
+    const api = buildBlogItemUrl(itemUrlSlug);
+    const json = await fetchKontent(api, preview, token);
+
+    if (!json.items) {
         const errorMessage = json.error ? getApiErrorMessage() : getNoResultsMessage();
         document.querySelector("main").appendChild(errorMessage);
     }
     else processBlogItem(json);
 }
 function processBlogItem(data) {
+    if (data.items.length === 0) {
+        const errorMessage = data.error ? getApiErrorMessage() : getNoResultsMessage();
+        document.querySelector("main").appendChild(errorMessage);
+        return;
+    }
     var blogSummary = "";
-    blogSummary = buildBlogItem(data.item, data.modular_content, data.item.elements.body.links);
+    blogSummary = buildBlogItem(data.items[0], data.modular_content, data.items[0].elements.body.links);
     document.querySelector("main").appendChild(blogSummary);
 }
 

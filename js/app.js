@@ -11,3 +11,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     loadBlogItems(blogCodename);
     loadAsideBlogTags();
 });
+
+
+export function getUrlParamater(param) {
+    const url = new URL(location.href);
+    return new Set(url.searchParams.getAll(param));
+}
