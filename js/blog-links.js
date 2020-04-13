@@ -12,7 +12,7 @@ function parseBlogLink(blogSummary, data, key) {
     const blogUrl = new URL(baseUrl);
     const blogPostLinks = blogSummary.querySelectorAll("[data-item-id='" + key + "']");
     for (const blogPostLink of blogPostLinks) {
-        const blogCodename = data[key].codename || "";
+        const blogCodename = data[key].url_slug || "";
         blogUrl.hash = blogCodename;
         blogPostLink.href = blogUrl.href;
         blogPostLink.target = '_blank';

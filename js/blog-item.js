@@ -10,7 +10,7 @@ const blogImageTemplate = document.querySelector("#blog_image_template");
 export function buildBlogItem(blog, modularContent, blogLinks, summary = false) {
     const title = firstOrDefaultValue(blog, "title") || "unknown";
     let blogItemContent = document.importNode(blogItemTemplate.content, true);
-    blogItemContent = inserBlogTitle(title, blog.system.codename, blogItemContent, summary);
+    blogItemContent = inserBlogTitle(title, firstOrDefaultValue(blog, "url"), blogItemContent, summary);
 
     let blogPost = blogItemContent.querySelector(".blog-post");
     blogPost = insertBlogImage(blog, blogPost);
@@ -32,19 +32,19 @@ export function buildBlogItem(blog, modularContent, blogLinks, summary = false) 
     processBlogLinks(blogItemContent, blogLinks);
     return blogItemContent;
 }
-function inserBlogTitle(blogTitle, blogCodename, blogItemContent, summary) {
+function inserBlogTitle(blogTitle, itemUrlSlug, blogItemContent, summary) {
     if (summary === false) {
         blogItemContent.querySelector(".blog-title").textContent = blogTitle;
         return blogItemContent;
     }
 
     const blogUrl = new URL(baseUrl);
-    blogUrl.hash = blogCodename;
+    blogUrl.hash = itemUrlSlug;
     const elementHyperlink = document.createElement("a");
     elementHyperlink.innerText = blogTitle;
     elementHyperlink.href = blogUrl;
     elementHyperlink.target = '_blank';
-    elementHyperlink.setAttribute('data-item_code', blogCodename);
+    elementHyperlink.setAttribute('data-item_code', itemUrlSlug);
     blogItemContent.querySelector(".blog-title").appendChild(elementHyperlink);
     return blogItemContent;
 }
